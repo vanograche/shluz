@@ -27,6 +27,7 @@ body{padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset
 .eyebrow{font-family:var(--f-mono);font-size:20px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:22px}
 .eyebrow.r{color:var(--red)} .eyebrow.b{color:var(--blue)} .eyebrow.g{color:var(--green)}
 h1{font-family:var(--f-disp);font-weight:800;font-size:62px;line-height:1.04;letter-spacing:-.02em;margin:0 0 18px;text-wrap:balance}
+.sub2{font-family:var(--f-disp);font-weight:600;font-size:40px;line-height:1.1;color:var(--red);margin:0 0 30px}
 .sub{font-family:var(--f-disp);font-weight:400;font-size:30px;line-height:1.25;margin:0 0 30px;color:var(--ink)}
 .sub em{font-style:normal;color:var(--blue)}
 ul{list-style:none;margin:0;padding:0;display:grid;gap:16px}
@@ -73,7 +74,7 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
 .tag-no b{display:block;font-size:16px}
 .tag-no span{font-size:13px;color:var(--muted)}
 .tag-no s{color:var(--red);font-family:var(--f-mono);font-weight:700}
-.hand{position:absolute;width:250px;right:-30px;top:262px;filter:drop-shadow(0 18px 24px rgba(13,15,18,.18))}
+.hand{position:absolute;filter:drop-shadow(0 22px 30px rgba(13,15,18,.2));transform:rotate(-8deg);transform-origin:30% 10%}
 .ripple{position:absolute;width:64px;height:64px;border-radius:50%;border:3px solid var(--blue);opacity:.5}
 /* мобильная подпись */
 .hint{max-width:1280px;margin:0 auto 14px;font-family:var(--f-mono);font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -89,6 +90,7 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
   <div>
     <div class="eyebrow r">● Проблема</div>
     <h1>Подписки списывают деньги, о&nbsp;которых ты&nbsp;забыл</h1>
+    <p class="sub2">И&nbsp;ими тяжело управлять</p>
     <ul>
       <li>Каждая подписка живёт в&nbsp;своём приложении</li>
       <li>После пробного периода сразу списывают деньги</li>
@@ -101,14 +103,14 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
       <div class="stm-h">Выписка по&nbsp;карте</div>
       <div class="hdr"><small>•• 4821 · ноябрь</small></div>
       <div class="stm-d">17 НОЯБРЯ</div>
-      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#7b4dff">Ok</div><div class="tx"><b>OKKO</b><span>Подписка</span></div><div class="amt neg">−599&nbsp;₽</div></div>
-      <div class="row"><div class="lg" style="background:#16a34a">Пт</div><div class="tx"><b>Продукты</b><span>Магазин у&nbsp;дома</span></div><div class="amt neg">−1&nbsp;240&nbsp;₽</div></div>
+      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#7b4dff">Ok</div><div class="tx"><b>OKKO</b><span>Подписка · было 399&nbsp;₽</span></div><div class="amt neg">−599&nbsp;₽</div></div>
+      <div class="row"><div class="lg" style="background:#ff5a36">Я+</div><div class="tx"><b>YANDEX PLUS</b><span>Подписка</span></div><div class="amt neg">−449&nbsp;₽</div></div>
       <div class="stm-d">14 НОЯБРЯ</div>
-      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#ef2d7a">ив</div><div class="tx"><b>IVI.RU</b><span>Подписка</span></div><div class="amt neg">−399&nbsp;₽</div></div>
-      <div class="row"><div class="lg" style="background:#f59e0b">☕</div><div class="tx"><b>Кофейня</b><span>Капучино</span></div><div class="amt neg">−240&nbsp;₽</div></div>
+      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#ef2d7a">ив</div><div class="tx"><b>IVI.RU</b><span>Подписка · не&nbsp;смотрел с&nbsp;лета</span></div><div class="amt neg">−399&nbsp;₽</div></div>
+      <div class="row"><div class="lg" style="background:#2d8cff">VK</div><div class="tx"><b>VK MUSIC</b><span>Подписка</span></div><div class="amt neg">−199&nbsp;₽</div></div>
       <div class="stm-d">11 НОЯБРЯ</div>
       <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#ff8a1f">Лр</div><div class="tx"><b>LITRES</b><span>Пробный период закончился</span></div><div class="amt neg">−399&nbsp;₽</div></div>
-      <div class="row"><div class="lg" style="background:#2d8cff">ЯТ</div><div class="tx"><b>Такси</b><span>Поездка</span></div><div class="amt neg">−460&nbsp;₽</div></div>
+      <div class="row"><div class="lg" style="background:#3b3f47">ST</div><div class="tx"><b>START</b><span>Подписка</span></div><div class="amt neg">−299&nbsp;₽</div></div>
     </div></div>
     <div class="note" style="right:-30px;top:70px">Это что?!</div>
     <svg class="circle" style="right:22px;top:128px" width="90" height="60" viewBox="0 0 90 60"><path d="M80 6 C 60 20, 40 34, 10 44 M10 44 L 26 30 M10 44 L 30 50" fill="none" stroke="#ff3b30" stroke-width="5" stroke-linecap="round"/></svg>
@@ -125,7 +127,7 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
     <ul>
       <li>У&nbsp;каждого сервиса своя карта</li>
       <li>Включить, выключить, пауза: одно касание</li>
-      <li>Хочет больше, чем ты разрешил? Спросим</li>
+      <li>Сервис поднял цену? Не&nbsp;дадим списать лишнее</li>
       <li>Пополняй с&nbsp;карты любого банка</li>
     </ul>
   </div>
@@ -139,21 +141,31 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
       <div class="row"><div class="lg" style="background:linear-gradient(135deg,#3b3f47,#111317)">ST</div><div class="tx"><b>START</b><span>8 декабря · 299&nbsp;₽</span></div><div class="sw"></div></div>
       <div style="margin-top:16px;padding:13px;border-radius:14px;background:#2445ff;color:#fff;text-align:center;font-weight:600;font-size:14px">＋ Подключить подписку</div>
     </div></div>
-    <div class="ripple" style="left:384px;top:171px"></div>
+    <div class="ripple" style="left:386px;top:172px"></div>
     <!-- рука: указательный палец нажимает на переключатель -->
-    <svg class="hand" viewBox="0 0 260 360" aria-hidden="true" style="right:-74px;top:178px;width:270px">
-      <g stroke="#0d0f12" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" fill="#fff">
-        <!-- палец -->
-        <path d="M44 34 C 44 14, 82 14, 82 34 L 84 170 L 46 176 Z"/>
-        <path d="M52 40 C 52 28, 74 28, 74 40 L 74 52 C 66 56, 58 56, 52 52 Z" fill="#f1f2f4"/>
-        <!-- ладонь и кулак -->
-        <path d="M46 160 C 40 196, 36 240, 52 286 C 66 326, 112 350, 166 346 C 218 342, 246 300, 244 250 L 240 166 C 240 146, 210 144, 208 166 L 208 176 C 208 154, 176 152, 174 172 L 174 182 C 174 160, 142 158, 140 178 L 140 190 C 140 170, 108 166, 104 186 L 102 200 L 84 170 L 84 150 C 70 140, 50 146, 46 160 Z"/>
+    <svg class="hand" viewBox="0 0 300 430" aria-hidden="true" style="right:-30px;top:176px;width:300px">
+      <defs>
+        <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7d6be"/><stop offset="1" stop-color="#e7ac86"/></linearGradient>
+        <linearGradient id="skin2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f3c8aa"/><stop offset=".55" stop-color="#f8dcc6"/><stop offset="1" stop-color="#e4a882"/></linearGradient>
+        <linearGradient id="cuff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f4dff"/><stop offset="1" stop-color="#1a33c9"/></linearGradient>
+      </defs>
+      <g stroke="#c98a66" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+        <!-- ладонь -->
+        <path d="M70 176 C 58 236 62 300 96 346 C 124 384 206 396 246 362 C 278 334 284 280 278 232 L 272 196 C 266 170 236 168 232 190 L 230 200 C 226 176 196 172 192 196 L 190 204 C 186 182 156 178 150 200 L 146 214 L 126 196 Z" fill="url(#skin)"/>
         <!-- согнутые пальцы -->
-        <path d="M140 190 C 140 212, 174 214, 174 194 M174 182 C 174 204, 208 206, 208 186 M208 176 C 208 196, 240 198, 240 180" fill="none"/>
+        <path d="M148 206 C 150 186 182 182 190 204 C 196 226 178 246 160 244 C 142 242 140 224 148 206 Z" fill="url(#skin)"/>
+        <path d="M190 202 C 194 180 226 178 232 198 C 238 222 220 244 202 242 C 184 240 182 222 190 202 Z" fill="url(#skin)"/>
+        <path d="M232 200 C 238 182 266 184 272 202 C 278 224 260 244 244 240 C 228 236 226 218 232 200 Z" fill="url(#skin)"/>
+        <!-- указательный палец -->
+        <path d="M72 46 C 72 14 128 14 128 46 L 130 196 C 116 212 84 212 70 196 Z" fill="url(#skin2)"/>
+        <path d="M82 36 C 82 22 118 22 118 36 L 118 58 C 106 64 94 64 82 58 Z" fill="#fbe3d8" stroke="#d9a58a"/>
+        <path d="M84 112 C 94 117 108 117 118 112 M86 120 C 96 124 106 124 116 120" fill="none" stroke="#d29a7a"/>
+        <path d="M82 168 C 94 174 108 174 120 168" fill="none" stroke="#d29a7a"/>
         <!-- большой палец -->
-        <path d="M104 186 C 98 220, 124 246, 156 244 C 176 242, 182 222, 166 214 C 150 206, 130 214, 120 200" fill="none"/>
-        <!-- рукав -->
-        <path d="M58 300 L 40 360 L 226 360 L 232 312" fill="#2445ff"/>
+        <path d="M78 300 C 82 262 118 236 156 240 C 184 244 188 272 166 284 C 140 298 112 300 92 326 Z" fill="url(#skin2)"/>
+        <path d="M150 252 C 166 252 172 266 162 274" fill="none" stroke="#d29a7a"/>
+        <!-- манжета -->
+        <path d="M92 344 C 70 370 60 400 56 430 L 284 430 C 282 400 278 372 262 352 C 210 390 134 384 92 344 Z" fill="url(#cuff)" stroke="#1a33c9"/>
       </g>
     </svg>
   </div>

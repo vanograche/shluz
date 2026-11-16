@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Шлюз — как работает</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Белый лист, схема слева направо (на телефоне — сверху вниз): 5 шагов, ниже — как Шлюз решает */
+:root{--bg:#fff;--ink:#0d0f12;--muted:#6b7280;--line:#e6e8ec;--soft:#f5f6f8;--blue:#2445ff;--blue-s:#eef1ff;--green:#16a34a;--green-s:#e8f7ee;--red:#ff3b30;--red-s:#ffecea;--amber:#b45309;--amber-s:#fef3c7;
+  --f-d:"Unbounded",system-ui,sans-serif;--f-b:"Onest",system-ui,sans-serif;--f-m:"JetBrains Mono",ui-monospace,monospace;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-b);-webkit-text-size-adjust:100%}
+body{padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page{max-width:1180px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-d);font-weight:800;font-size:18px}
+.brand i{width:22px;height:22px;border-radius:7px;background:var(--ink);display:inline-grid;place-items:center}
+.brand i::after{content:"";width:8px;height:12px;border:2.5px solid #fff;border-radius:2px}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(30px,5vw,52px);line-height:1.05;letter-spacing:-.02em;margin:22px 0 6px}
+.lead{font-size:clamp(17px,2.2vw,22px);color:var(--muted);margin:0 0 30px}
+.lead b{color:var(--ink)}
+.eb{font-family:var(--f-m);font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin:44px 0 16px}
+/* шаги */
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;align-items:stretch}
+.st{position:relative;background:var(--soft);border-radius:22px;padding:16px 14px 18px;display:grid;gap:12px;align-content:start}
+.st:not(:last-child)::after{content:"→";position:absolute;right:-14px;top:50%;transform:translate(50%,-50%);width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:14px;z-index:2}
+.n{font-family:var(--f-m);font-weight:700;font-size:13px;color:var(--muted)}
+.t{font-family:var(--f-d);font-weight:600;font-size:17px;line-height:1.15}
+.s{font-size:14px;color:var(--muted);line-height:1.3}
+.pic{height:150px;border-radius:16px;background:#fff;display:grid;place-items:center;position:relative;overflow:hidden;border:1px solid var(--line)}
+/* мини-элементы */
+.card{width:150px;height:94px;border-radius:12px;background:linear-gradient(135deg,#2445ff,#5a2bb8);color:#fff;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 10px 24px rgba(36,69,255,.3)}
+.card b{font-family:var(--f-d);font-size:11px;letter-spacing:.08em}
+.card span{font-family:var(--f-m);font-size:12px}
+.mini{width:88%;font-size:12px;display:grid;gap:6px}
+.mini .r{display:flex;justify-content:space-between;gap:8px}
+.mini .r b{font-family:var(--f-m)}
+.mini .need{background:var(--red-s);color:var(--red);border-radius:8px;padding:5px 8px;display:flex;justify-content:space-between;font-weight:600}
+.mini .btn{background:var(--blue);color:#fff;border-radius:8px;padding:7px;text-align:center;font-weight:600}
+.lg{width:34px;height:34px;border-radius:10px;color:#fff;font-weight:700;font-size:12px;display:grid;place-items:center}
+.fan{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px;width:90%}
+.fan .logos{display:grid;gap:6px;justify-items:end}
+.sw{width:40px;height:24px;border-radius:99px;background:var(--green);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:2px;left:18px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sw.off{background:#d9dce1}.sw.off::after{left:2px}
+.tg{width:88%;display:grid;gap:8px}
+.tg .r{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.tg .r span{flex:1}
+.ph{width:62px;height:112px;border-radius:14px;border:4px solid var(--ink);display:grid;place-items:center;font-family:var(--f-d);font-weight:800;font-size:11px;position:relative}
+.ph::before{content:"";position:absolute;top:5px;width:18px;height:5px;border-radius:4px;background:var(--ink)}
+.chk{position:absolute;right:22px;bottom:18px;background:var(--green);color:#fff;border-radius:99px;font-size:11px;font-weight:700;padding:4px 8px}
+/* решение */
+.decide{display:grid;grid-template-columns:auto auto 1fr;gap:16px;align-items:center}
+.who{background:var(--soft);border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:center;font-weight:600}
+.who small{display:block;font-family:var(--f-m);color:var(--muted);font-weight:500}
+.arrow{font-size:28px;color:var(--muted)}
+.gate{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.q{border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;font-weight:600;display:grid;gap:4px}
+.q small{font-weight:400;color:var(--muted);font-size:13px}
+.outs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.out{border-radius:18px;padding:14px 16px;font-weight:600;display:flex;gap:12px;align-items:center}
+.out .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;flex:none}
+.out.ok{background:var(--green-s)} .out.ok .ic{background:var(--green)}
+.out.no{background:var(--red-s)} .out.no .ic{background:var(--red)}
+.out small{display:block;font-weight:400;color:var(--muted)}
+/* новый сервис + честно */
+.duo{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+.push{border-radius:20px;background:var(--ink);color:#fff;padding:16px;display:grid;gap:12px}
+.push .h{display:flex;gap:10px;align-items:center;font-family:var(--f-m);font-size:12px;opacity:.7}
+.push b{font-size:18px}
+.push .bt{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.push .bt span{text-align:center;padding:10px;border-radius:12px;font-weight:700;background:#fff;color:var(--ink)}
+.push .bt span+span{background:rgba(255,255,255,.14);color:#fff}
+.opt{border-radius:20px;background:var(--amber-s);padding:16px;display:grid;gap:6px}
+.opt b{font-size:16px}
+.opt span{font-size:14px;color:#7c4a03}
+.honest{margin-top:14px;font-size:14px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.honest span{background:var(--soft);border-radius:99px;padding:6px 12px}
+@media (max-width:900px){
+  .flow{grid-template-columns:1fr 1fr}
+  .st:not(:last-child)::after{display:none}
+  .decide{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}
+  .duo{grid-template-columns:1fr}
+}
+@media (max-width:520px){.flow{grid-template-columns:1fr}.gate{grid-template-columns:1fr}.outs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="brand"><i></i>Шлюз</div>
+  <h1>Одна карта для&nbsp;всех подписок</h1>
+  <p class="lead">Вставил её&nbsp;везде <b>→</b> управляешь переключателями</p>
+
+  <div class="eb">Что делает человек</div>
+  <div class="flow">
+    <div class="st"><div class="n">01</div><div class="pic"><div class="ph">Шлюз</div><span class="chk">Госуслуги ✓</span></div><div class="t">Скачал и&nbsp;вошёл</div><div class="s">Телефон, код из&nbsp;СМС, Госуслуги</div></div>
+    <div class="st"><div class="n">02</div><div class="pic"><div class="card"><b>ШЛЮЗ</b><span>2200 •••• 4821</span></div></div><div class="t">Получил карту</div><div class="s">Одну. Сразу</div></div>
+    <div class="st"><div class="n">03</div><div class="pic"><div class="mini"><div class="r"><span>В ноябре спишут</span><b>3&nbsp;000&nbsp;₽</b></div><div class="r"><span>На карте</span><b>500&nbsp;₽</b></div><div class="need"><span>Не хватает</span><span>2&nbsp;500&nbsp;₽</span></div><div class="btn">Пополнить</div></div></div><div class="t">Пополнил</div><div class="s">С любой карты или по&nbsp;СБП. Можно само, под&nbsp;списания</div></div>
+    <div class="st"><div class="n">04</div><div class="pic"><div class="fan"><div class="card" style="width:84px;height:54px;padding:6px 8px;border-radius:9px"><b style="font-size:8px">ШЛЮЗ</b><span style="font-size:9px">•• 4821</span></div><div class="logos"><span class="lg" style="background:#7b4dff">Ok</span><span class="lg" style="background:#ef2d7a">ив</span><span class="lg" style="background:#ff5a36">Я+</span></div></div></div><div class="t">Вставил её&nbsp;в сервисы</div><div class="s">Okko, Иви, Яндекс&nbsp;— один номер везде</div></div>
+    <div class="st"><div class="n">05</div><div class="pic"><div class="tg"><div class="r"><span class="lg" style="background:#7b4dff;width:26px;height:26px;font-size:10px">Ok</span><span>Okko</span><i class="sw off"></i></div><div class="r"><span class="lg" style="background:#ef2d7a;width:26px;height:26px;font-size:10px">ив</span><span>Иви</span><i class="sw"></i></div><div class="r"><span class="lg" style="background:#ff5a36;width:26px;height:26px;font-size:10px">Я+</span><span>Яндекс</span><i class="sw"></i></div></div></div><div class="t">Тык-тык</div><div class="s">Выключил&nbsp;— сервис больше не&nbsp;спишет</div></div>
+  </div>
+
+  <div class="eb">Что делает Шлюз, когда сервис хочет денег</div>
+  <div class="decide">
+    <div class="who"><span class="lg" style="background:#7b4dff">Ok</span><div>Okko хочет<small>399&nbsp;₽</small></div></div>
+    <div class="arrow">→</div>
+    <div class="gate">
+      <div class="q">Okko включён?<small>Переключатель</small></div>
+      <div class="q">Цена как обычно?<small>Подорожал&nbsp;— спросим</small></div>
+      <div class="q">Деньги есть?<small>Нет&nbsp;— напомним</small></div>
+    </div>
+  </div>
+  <div class="outs">
+    <div class="out ok"><span class="ic">✓</span><div>Всё да&nbsp;— пропустили<small>Подписка работает</small></div></div>
+    <div class="out no"><span class="ic">✕</span><div>Хоть одно нет&nbsp;— не&nbsp;пустили<small>И&nbsp;сразу написали тебе</small></div></div>
+  </div>
+
+  <div class="eb">Новый сервис</div>
+  <div class="duo">
+    <div class="push"><div class="h"><span class="lg" style="background:#2445ff;width:22px;height:22px;font-size:9px">Ш</span>ШЛЮЗ · сейчас</div><b>Новый сервис «START» хочет 299&nbsp;₽</b><div class="bt"><span>Разрешить</span><span>Запретить</span></div></div>
+    <div class="opt"><b>🎟 Пробный период?</b><span>Возьми отдельную карту на&nbsp;один раз. После проверки она закроется&nbsp;— деньги не&nbsp;уйдут</span></div>
+  </div>
+  <div class="honest"><span>Незнакомым&nbsp;— по&nbsp;умолчанию нет</span><span>Не&nbsp;видим подписки через оператора и&nbsp;App Store</span><span>Выключить ≠ отменить в&nbsp;самом сервисе</span></div>
+</div>
+</body>
+</html>

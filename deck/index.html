@@ -141,6 +141,12 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
 .ba{font-family:var(--f-mono);font-size:11.5px;white-space:nowrap}
 .br.hit .ba{color:var(--red)}
 .cnt{position:absolute;left:190px;bottom:20px;z-index:6;font-family:var(--f-mono);font-size:20px;font-weight:700;background:var(--ink);color:#fff;border-radius:99px;padding:10px 18px}
+
+/* фото руки с телефоном: экран приложения поверх зелёного экрана фото */
+.photo{position:relative;width:493px;height:740px}
+.photo img{width:100%;height:100%;display:block;mix-blend-mode:multiply}
+.photo .ov{position:absolute;left:137px;top:75px;width:215px;height:466px;border-radius:25px;overflow:hidden;background:#fff}
+.ph-scr{width:336px;height:736px;transform:scale(.64);transform-origin:0 0;border-radius:0;padding-top:58px}
 </style>
 </head>
 <body>
@@ -186,7 +192,7 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
     </ul>
   </div>
   <div class="art">
-    <div class="phone"><div class="scr">
+    <div class="photo"><img src="img/hand.jpg" alt="Рука держит телефон с приложением Шлюз"><div class="ov"><div class="scr ph-scr">
       <div class="hdr"><b>Мои подписки</b><small>5</small></div>
       <div class="row"><div class="lg" style="background:linear-gradient(135deg,#ff5a36,#c3171f)">Я+</div><div class="tx"><b>Яндекс Плюс</b><span>19 ноября · 449&nbsp;₽</span></div><div class="sw"></div></div>
       <div class="row"><div class="lg" style="background:linear-gradient(135deg,#7b4dff,#3a17a8)">Ok</div><div class="tx"><b>Okko</b><span>Выключаю…</span></div><div class="sw mid" id="okko-sw"></div></div>
@@ -194,8 +200,7 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
       <div class="row"><div class="lg" style="background:linear-gradient(135deg,#2d8cff,#0a4fc2)">VK</div><div class="tx"><b>VK Музыка</b><span>28 ноября · 199&nbsp;₽</span></div><div class="sw"></div></div>
       <div class="row"><div class="lg" style="background:linear-gradient(135deg,#3b3f47,#111317)">ST</div><div class="tx"><b>START</b><span>8 декабря · 299&nbsp;₽</span></div><div class="sw"></div></div>
       <div style="margin-top:16px;padding:13px;border-radius:14px;background:#2445ff;color:#fff;text-align:center;font-weight:600;font-size:14px">＋ Подключить подписку</div>
-    </div></div>
-    <div class="ripple" style="left:384px;top:172px"></div>
+    </div></div></div>
   </div>
 </div></section>
 

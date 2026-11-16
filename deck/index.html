@@ -33,7 +33,7 @@ h1{font-family:var(--f-disp);font-weight:800;font-size:62px;line-height:1.04;let
 ul{list-style:none;margin:0;padding:0;display:grid;gap:16px}
 li{display:flex;gap:16px;align-items:baseline;font-size:29px;line-height:1.25}
 li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;background:var(--ink);transform:translateY(-4px)}
-.s1 h1{font-size:56px}
+.s1 h1{font-size:52px}
 .s1 li::before{background:var(--red)} .s2 li::before{background:var(--blue)} .s3 li::before{background:var(--green)}
 .foot{margin-top:34px;display:inline-flex;gap:14px;align-items:center;font-family:var(--f-mono);font-size:22px;padding:14px 22px;border-radius:99px;background:var(--ink);color:#fff}
 .foot span{opacity:.6}
@@ -113,6 +113,30 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
 .rule .res{display:grid;gap:8px}
 .rule .res span{border-radius:14px;padding:9px 14px;font-weight:700;font-size:18px;white-space:nowrap}
 .rule .ok{background:#e8f7ee;color:var(--green)}.rule .no{background:#ffecea;color:var(--red)}
+
+/* слайд 1: три банка */
+.s1{grid-template-columns:1fr 700px}
+.banks{height:760px;display:block}
+.bp{position:absolute;width:228px;height:540px;border-radius:44px;background:#0d0f12;padding:10px;box-shadow:0 26px 60px rgba(13,15,18,.22)}
+.bs{width:100%;height:100%;border-radius:35px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.bh{padding:44px 16px 16px;position:relative}
+.bh::before{content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);width:78px;height:22px;border-radius:14px;background:#0d0f12}
+.bt{font-family:var(--f-disp);font-weight:800;font-size:15px;margin-bottom:12px}
+.bc{border-radius:16px;padding:12px 14px;display:grid;gap:2px}
+.bc small{font-family:var(--f-mono);font-size:11px;opacity:.8}
+.bc b{font-family:var(--f-disp);font-weight:800;font-size:19px}
+.g .bh{background:#21a038;color:#fff}.g .bc{background:rgba(255,255,255,.18)}
+.y .bh{background:#ffdd2d;color:#0d0f12}.y .bc{background:#0d0f12;color:#fff}
+.r .bh{background:#ef3124;color:#fff}.r .bc{background:rgba(255,255,255,.18)}
+.bl{padding:8px 14px;flex:1}
+.bd{font-family:var(--f-mono);font-size:10px;color:var(--muted);letter-spacing:.08em;margin:6px 0 4px}
+.br{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid var(--line);position:relative}
+.bd+.br{border-top:0}
+.bi{width:28px;height:28px;border-radius:10px;display:grid;place-items:center;font-size:15px;font-weight:700;color:#fff;flex:none}
+.br .tx b{font-size:12px}.br .tx span{font-size:10px}.br .tx{min-width:0}.br .tx b,.br .tx span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ba{font-family:var(--f-mono);font-size:11.5px;white-space:nowrap}
+.br.hit .ba{color:var(--red)}
+.cnt{position:absolute;left:190px;bottom:20px;z-index:6;font-family:var(--f-mono);font-size:20px;font-weight:700;background:var(--ink);color:#fff;border-radius:99px;padding:10px 18px}
 </style>
 </head>
 <body>
@@ -133,22 +157,10 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
       <li>О&nbsp;новой цене узнаёшь по&nbsp;выписке</li>
     </ul>
   </div>
-  <div class="art">
-    <div class="phone"><div class="scr">
-      <div class="stm-h">Выписка по&nbsp;карте</div>
-      <div class="hdr"><small>•• 4821 · ноябрь</small></div>
-      <div class="stm-d">17 НОЯБРЯ</div>
-      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#7b4dff">Ok</div><div class="tx"><b>OKKO</b><span>Подписка · было 399&nbsp;₽</span></div><div class="amt neg">−599&nbsp;₽</div></div>
-      <div class="row"><div class="lg" style="background:#ff5a36">Я+</div><div class="tx"><b>YANDEX PLUS</b><span>Подписка</span></div><div class="amt neg">−449&nbsp;₽</div></div>
-      <div class="stm-d">14 НОЯБРЯ</div>
-      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#ef2d7a">ив</div><div class="tx"><b>IVI.RU</b><span>Подписка · не&nbsp;смотрел с&nbsp;лета</span></div><div class="amt neg">−399&nbsp;₽</div></div>
-      <div class="row"><div class="lg" style="background:#2d8cff">VK</div><div class="tx"><b>VK MUSIC</b><span>Подписка</span></div><div class="amt neg">−199&nbsp;₽</div></div>
-      <div class="stm-d">11 НОЯБРЯ</div>
-      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#ff8a1f">Лр</div><div class="tx"><b>LITRES</b><span>Пробный период закончился</span></div><div class="amt neg">−399&nbsp;₽</div></div>
-      <div class="row"><div class="lg" style="background:#3b3f47">ST</div><div class="tx"><b>START</b><span>Подписка</span></div><div class="amt neg">−299&nbsp;₽</div></div>
-    </div></div>
-    <div class="note" style="right:-30px;top:70px">Это что?!</div>
-    <svg class="circle" style="right:22px;top:128px" width="90" height="60" viewBox="0 0 90 60"><path d="M80 6 C 60 20, 40 34, 10 44 M10 44 L 26 30 M10 44 L 30 50" fill="none" stroke="#ff3b30" stroke-width="5" stroke-linecap="round"/></svg>
+  <div class="art banks">
+    <div class="bp g" style="left:0;top:90px;transform:rotate(-4deg)"><div class="bs"><div class="bh"><div class="bt">Мой банк</div><div class="bc"><small>Карта •• 4821</small><b>24&nbsp;310&nbsp;₽</b></div></div><div class="bl"><div class="bd">ПОСЛЕДНИЕ ОПЕРАЦИИ</div><div class="br"><span class="bi" style="background:#e8f5e9">🛒</span><div class="tx"><b>Продукты</b><span>Супермаркет</span></div><b class="ba">−1&nbsp;240&nbsp;₽</b></div><div class="br hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="bi" style="background:#7b4dff">Ok</span><div class="tx"><b>OKKO</b><span>Подписка</span></div><b class="ba">−599&nbsp;₽</b></div><div class="br"><span class="bi" style="background:#fff3d6">🚕</span><div class="tx"><b>Такси</b><span>Поездка</span></div><b class="ba">−460&nbsp;₽</b></div><div class="br"><span class="bi" style="background:#f3ebe6">☕</span><div class="tx"><b>Кофейня</b><span>Капучино</span></div><b class="ba">−240&nbsp;₽</b></div></div></div></div><div class="bp y" style="left:236px;top:40px;z-index:3"><div class="bs"><div class="bh"><div class="bt">Банк</div><div class="bc"><small>Карта •• 1290</small><b>8&nbsp;905&nbsp;₽</b></div></div><div class="bl"><div class="bd">ПОСЛЕДНИЕ ОПЕРАЦИИ</div><div class="br hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="bi" style="background:#ef2d7a">ив</span><div class="tx"><b>IVI.RU</b><span>Подписка</span></div><b class="ba">−399&nbsp;₽</b></div><div class="br"><span class="bi" style="background:#e3f2fd">💊</span><div class="tx"><b>Аптека</b><span>Покупка</span></div><b class="ba">−820&nbsp;₽</b></div><div class="br hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="bi" style="background:#ff5a36">Я+</span><div class="tx"><b>YANDEX PLUS</b><span>Подписка</span></div><b class="ba">−449&nbsp;₽</b></div><div class="br"><span class="bi" style="background:#e8f5e9">🛒</span><div class="tx"><b>Продукты</b><span>Магазин у&nbsp;дома</span></div><b class="ba">−2&nbsp;100&nbsp;₽</b></div></div></div></div><div class="bp r" style="left:472px;top:90px;transform:rotate(4deg);z-index:2"><div class="bs"><div class="bh"><div class="bt">Банк</div><div class="bc"><small>Карта •• 7733</small><b>3&nbsp;120&nbsp;₽</b></div></div><div class="bl"><div class="bd">ПОСЛЕДНИЕ ОПЕРАЦИИ</div><div class="br"><span class="bi" style="background:#fff3d6">🚕</span><div class="tx"><b>Такси</b><span>Поездка</span></div><b class="ba">−380&nbsp;₽</b></div><div class="br hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="bi" style="background:#ff8a1f">Лр</span><div class="tx"><b>LITRES</b><span>Пробный кончился</span></div><b class="ba">−399&nbsp;₽</b></div><div class="br"><span class="bi" style="background:#fde7e7">🍝</span><div class="tx"><b>Ресторан</b><span>Ужин</span></div><b class="ba">−2&nbsp;300&nbsp;₽</b></div><div class="br hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="bi" style="background:#3b3f47">ST</span><div class="tx"><b>START</b><span>Подписка</span></div><b class="ba">−299&nbsp;₽</b></div></div></div></div>
+    <div class="note" style="right:-34px;top:-6px;z-index:5">Где что?!</div>
+    <div class="cnt">3 банка · 3 карты · 6 подписок</div>
   </div>
 </div></section>
 

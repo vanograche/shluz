@@ -209,7 +209,8 @@ const TARIFFS={
   base:{name:'Шлюз',price:149,year:1290,subs:15,once:10,list:['До 15 подписок','10 одноразовых карт в месяц','«Пропустить один раз» и пауза до даты','Автопополнение под списание','Пополнение картой без комиссии','Помощь со спорными списаниями']},
   family:{name:'Семья',price:249,subs:30,once:20,list:['Всё из тарифа «Шлюз»','До 30 подписок на 4 человек','Общие подписки, например семейный Яндекс Плюс','У ребёнка свой остаток']},
 };
-const KEY='shluz-demo-v2';
+const KEY='shluz-demo-v3';
+const CATS={kino:'кино и сериалы',music:'музыку и книги',games:'игры',food:'доставку еды'};
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const rub=n=>Math.round(n).toLocaleString('ru-RU').replace(/\s/g,NB)+NB+'₽';
@@ -224,11 +225,11 @@ function pauseOver(s){if(s.state=='pause'&&s.pauseUntil&&s.pauseUntil<=today().g
 
 function seed(){
   const t=today(),day=n=>addDays(t,n).getDate();
-  const mk=(id,svc,o)=>Object.assign({id,svc,name:SVC[svc].name,price:SVC[svc].price,kind:'sub',state:'on',perMonth:SVC[svc].price,perTx:SVC[svc].price,total:0,once:false},mkCard(),o);
+  const mk=(id,svc,o)=>Object.assign({id,svc,name:SVC[svc].name,price:SVC[svc].price,kind:'sub',state:'on',perMonth:SVC[svc].price,perTx:SVC[svc].price,perDay:0,total:0,note:'',members:[]},mkCard(),o);
   const subs=[
     mk('s1','yplus',{day:day(3)}),
     mk('s2','ivi',{day:day(8),state:'off'}),
-    mk('s3','okko',{day:day(-1)}),
+    mk('s3','okko',{day:day(-1),note:'Мультики для Сони'}),
     mk('s4','litres',{kind:'once',day:null,trial:addDays(t,5).getTime(),perMonth:399,perTx:399}),
     mk('s5','vkm',{day:day(12),state:'pause',pauseUntil:addDays(t,15).getTime()}),
     mk('s6','start',{day:day(22)}),
@@ -250,7 +251,7 @@ function seed(){
     {t:ts(-27,8,0),sub:'s1',k:'ok',amt:449},
     {t:ts(-30,11,40),sub:'s2',k:'ok',amt:399},
   ];
-  return{onb:false,seenEv:ts(-1,0,0),wallet:650,auto:true,source:{bank:'Т-Банк',last4:'1234'},plan:'base',onceUsed:1,subs,ev};
+  return{reg:false,me:{name:'Аня',full:'Анна Смирнова',phone:'+7 (911) 177-07-77'},ntf:{all:true,block:true,before:true},family:['Максим','Соня'],onb:false,seenEv:ts(-1,0,0),wallet:650,auto:true,source:{bank:'Т-Банк',last4:'1234'},plan:'base',onceUsed:1,subs,ev};
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
@@ -304,10 +305,10 @@ function detail(s){
   const num=view.reveal?s.num:'•••• •••• •••• '+s.last4;
   const st={on:'Включена',off:'Выключена',pause:'На паузе до '+(s.pauseUntil?fdate(s.pauseUntil):'')}[s.state];
   let h=`<button class="back" data-go="home">‹ Назад</button>
-  <div class="dhead">${logo(s)}<div><h2>${esc(s.name)}</h2><div class="muted">${st}</div></div></div>
+  <div class="dhead">${logo(s)}<div><h2>${esc(s.name)}</h2><div class="muted">${st}${s.note?' · '+esc(s.note):''}</div></div></div>
   <div class="panel"><div class="trow"><div class="txt"><b>${s.state=='on'?'Списания разрешены':'Списания не пускаем'}</b><span class="muted">${s.state=='on'?'Выключи или поставь на паузу — и '+esc(s.name)+' не сможет списать':s.state=='pause'?'Включится сама '+fdate(s.pauseUntil)+'. Можно включить раньше':'Пока не включишь — ни одного рубля'}</span></div>${sw(s)}</div></div>
   <div class="vcard ${s.state=='on'?'':'off'}" style="background:${svcC(s)}">
-    <div class="r1"><span class="brand">ШЛЮЗ</span><span class="svc">${s.kind=='once'?'на один раз':'только для '+esc(s.name)}</span></div>
+    <div class="r1"><span class="brand">ШЛЮЗ</span><span class="svc">${cardLbl(s)}</span></div>
     <div class="num">${num}</div>
     <div class="r3"><span>Срок<b>${view.reveal?s.exp:'••/••'}</b></span><span>CVC<b>${view.reveal?s.cvc:'•••'}</b></span><span style="font-weight:700;font-size:14px">МИР</span></div>
     ${s.state=='on'?'':`<div class="lock">${s.state=='pause'?'⏸ На паузе':'⏻ Выключена'}</div>`}
@@ -315,11 +316,14 @@ function detail(s){
   <div class="panel">
     <div class="kv"><span>Номер и код карты</span><button class="lnk" data-act="${view.reveal?'hide':'reveal'}">${view.reveal?'Скрыть':'Показать'}</button></div>
     ${view.reveal?`<div class="stack" style="padding-bottom:12px">${copyRow('Номер',s.num)}${copyRow('Срок',s.exp)}${copyRow('CVC',s.cvc)}</div>`:''}
-    <div class="kv"><span>Какая карта</span><b>${s.kind=='once'?'Одноразовая<br><span class="muted" style="font-weight:400;font-size:13px">закроется после первой оплаты</span>':'Только для '+esc(s.name)+'<br><span class="muted" style="font-weight:400;font-size:13px">в других местах не сработает</span>'}</b></div>
+    <div class="kv"><span>Какая карта</span><b>${s.kind=='once'?'Одноразовая<br><span class="muted" style="font-weight:400;font-size:13px">закроется после первой оплаты</span>':s.kind=='cat'?'Только на '+CATS[s.cat]+'<br><span class="muted" style="font-weight:400;font-size:13px">в других магазинах не сработает</span>':'Только для '+esc(s.name)+'<br><span class="muted" style="font-weight:400;font-size:13px">в других местах не сработает</span>'}</b></div>
+    <div class="kv"><span>Заметка</span><button class="lnk" data-act="note">${s.note?esc(s.note):'Добавить'} ›</button></div>
+    <div class="kv"><span>Кто пользуется</span><button class="lnk" data-act="share">${s.members&&s.members.length?'Ты и '+s.members.join(', '):'Только ты'} ›</button></div>
     <div class="kv"><span>Следующее списание</span><b>${s.state!='on'?'не пустим':trialOn(s)?'после '+fdate(s.trial):d?fdate(d)+' · '+rub(s.price):'ждём первое'}</b></div>
   </div>
   <div class="sec"><h3>Сколько можно списывать</h3></div>
   <div class="panel">
+    <div class="kv"><span>За сутки</span><button class="lnk" data-lim="perDay">${s.perDay?'до '+rub(s.perDay):'без предела'} ›</button></div>
     <div class="kv"><span>За один раз</span><button class="lnk" data-lim="perTx">${s.perTx?'до '+rub(s.perTx):'без предела'} ›</button></div>
     <div class="kv"><span>За месяц</span><button class="lnk" data-lim="perMonth">${s.perMonth?'до '+rub(s.perMonth):'без предела'} ›</button></div>
     <div class="kv"><span>Всего, за всё время</span><button class="lnk" data-lim="total">${s.total?'до '+rub(s.total):'без предела'} ›</button></div>
@@ -339,7 +343,7 @@ const copyRow=(l,v)=>`<div class="copy"><span><small>${l}</small>${v}</span><but
 function evMeta(e){
   const s=sub(e.sub)||{name:e.name||'Сервис'};const n=esc(s.name);
   return {
-    ok:['ok','✓',`${n} списал`,'Всё по плану',`<span class="amt">−${rub(e.amt)}</span>`],
+    ok:[e.st=='pending'?'info':'ok',e.st=='pending'?'…':'✓',`${n} списал`,e.st=='pending'?'В обработке — деньги отложены, проведём за 1–3 дня':'Проведено',`<span class="amt">−${rub(e.amt)}</span>`],
     check:['info','1',`${n} проверил карту`,'Взял 1'+NB+'₽ и сразу вернул — так сервисы проверяют карту',''],
     block:['block','✕',`${n} пытался списать — не пустили`,e.why||'Подписка выключена',`<span class="amt cut">${rub(e.amt)}</span>`],
     limit:['block','✋',`${n} хотел ${rub(e.amt)} — не пустили`,`Твой предел — ${rub(e.lim)}`+(e.open?'':e.allowed?' · пропущено один раз':''),`<span class="amt cut">${rub(e.amt)}</span>`],
@@ -350,13 +354,14 @@ function evMeta(e){
     pause:['pause','⏸',`${n}: на паузе`,'До '+(e.until?fdate(e.until):'')+' — потом включится сама',''],
     issue:['info','▭',`Выпустили карту для ${n}`,'Карта •• '+(s.last4||''),''],
     close:['info','✕',`Карта ${n} закрыта`,'По ней больше никто не спишет',''],
-    dispute:['pause','?',`Спорное списание ${n}`,e.why||'Разбираемся',`<span class="amt">${rub(e.amt)}</span>`],
+    dispute:['pause','?',`Спорное списание ${n}`,DSP[e.stage||0][0],`<span class="amt">${rub(e.amt)}</span>`],
+    credit:['ok','↩',`Временно вернули деньги за ${n}`,'Пока банк разбирается — деньги твои',`<span class="amt plus">+${rub(e.amt)}</span>`],
   }[e.k];
 }
 function evRow(e,cnt){
   const M=evMeta(e);const tm=new Date(e.t),time=String(tm.getHours()).padStart(2,'0')+':'+String(tm.getMinutes()).padStart(2,'0');
   const dis=e.k=='ok'&&!e.disputed;
-  return `<div class="ev"><span class="ic ${M[0]}">${M[1]}</span><div class="txt"><div class="t">${M[2]}${cnt>1?` · ${cnt}${NB}${plural(cnt,'раз','раза','раз')}`:''}</div><div class="d">${M[3]} · ${time}</div>${dis?`<button class="more" data-dispute="${e.t}">Не узнаю это списание ›</button>`:''}${e.k=='limit'&&e.open?`<button class="more" data-once="${e.sub}">Пропустить один раз ›</button>`:''}</div>${M[4]}</div>`;
+  return `<div class="ev"><span class="ic ${M[0]}">${M[1]}</span><div class="txt"><div class="t">${M[2]}${cnt>1?` · ${cnt}${NB}${plural(cnt,'раз','раза','раз')}`:''}</div><div class="d">${M[3]} · ${time}</div>${dis?`<button class="more" data-dispute="${e.t}">Не узнаю это списание ›</button>`:''}${e.k=='dispute'?`<button class="more" data-dtrack="${e.t}">Где сейчас заявка ›</button>`:''}${e.k=='limit'&&e.open?`<button class="more" data-once="${e.sub}">Пропустить один раз ›</button>`:''}</div>${M[4]}</div>`;
 }
 
 function events(){
@@ -382,7 +387,7 @@ function events(){
 function profile(){
   const T=tariff(),used=S.subs.length;
   return `<div class="top"><div class="word"><i></i>Шлюз</div></div>
-  <div class="dhead"><span class="ava" style="width:56px;height:56px;font-size:22px">А</span><div><h2>Аня</h2><div class="muted">+7 (911) 177-07-77 · проверена через Госуслуги ✓</div></div></div>
+  <div class="dhead"><span class="ava" style="width:56px;height:56px;font-size:22px">${esc(S.me.name[0])}</span><div><h2>${esc(S.me.name)}</h2><div class="muted">${S.me.phone}<br>Личность подтверждена через Госуслуги ✓</div></div></div>
   <div class="panel"><div class="trow"><span class="minicard"></span><div class="txt"><b>${esc(S.source.bank)} •• ${S.source.last4}</b><span class="muted">С этой карты пополняем Шлюз</span></div><button class="lnk" data-act="source">Сменить</button></div>
     <div class="kv" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px"><span style="color:var(--ink)"><b style="font-size:15px">Автопополнение</b><span class="muted" style="font-size:13px;display:block">За день до списания кладём на Шлюз ровно его сумму</span></span><button class="sw ${S.auto?'on':''}" role="switch" aria-checked="${S.auto}" aria-label="Автопополнение" data-act="auto"></button></div>
   </div>
@@ -390,13 +395,16 @@ function profile(){
     <div>Подписок ${used} из ${T.subs}</div><div class="bar"><i style="width:${Math.min(100,used/T.subs*100)}%"></i></div>
     <div>Одноразовых карт в этом месяце ${S.onceUsed} из ${T.once}</div>
     <button data-act="tariffs">Все тарифы</button></div>
+  <div class="sec"><h3>Уведомления</h3></div>
+  <div class="panel">${[['all','О каждом списании','Сколько и кто списал'],['block','Когда не пустили','Сервис пытался списать, а мы отказали'],['before','За день до списания','Чтобы успеть выключить']].map(([k,a,b])=>`<div class="kv"><span style="color:var(--ink)"><b style="font-size:15px;text-align:left">${a}</b><span class="muted" style="font-size:13px;display:block">${b}</span></span><button class="sw ${S.ntf[k]?'on':''}" role="switch" aria-checked="${!!S.ntf[k]}" aria-label="${a}" data-ntf="${k}"></button></div>`).join('')}</div>
+  ${S.plan=='family'?`<div class="sec"><h3>Семья</h3></div><div class="panel">${S.family.map(m=>`<div class="kv"><span style="color:var(--ink)">${esc(m)}</span><span class="muted">${S.subs.filter(x=>(x.members||[]).includes(m)).length} подписок</span></div>`).join('')}</div>`:''}
   <div class="sec"><h3>Как это работает</h3></div>
   <div class="panel steps">
     <div class="step"><b>1</b><div><strong>Пополняешь Шлюз</strong><p class="muted">Со своей карты любого банка или по СБП. Можно сразу, можно автоматически перед каждым списанием</p></div></div>
     <div class="step"><b>2</b><div><strong>Под каждый сервис — своя карта</strong><p class="muted">Её ты вставляешь в Иви, Okko и другие вместо своей. Работает только там</p></div></div>
     <div class="step"><b>3</b><div><strong>Сервис списывает — Шлюз решает</strong><p class="muted">Включено и не дороже твоего предела — пропускаем. Выключено, на паузе или дороже — не пускаем и пишем тебе</p></div></div>
   </div>
-  <div class="stack" style="margin-top:16px"><button class="btn ghost" data-act="onb">Показать знакомство ещё раз</button><button class="btn ghost" data-act="reset">Начать демо заново</button></div>`;
+  <div class="stack" style="margin-top:16px"><button class="btn ghost" data-act="onb">Показать знакомство ещё раз</button><button class="btn ghost" data-act="reset">Начать демо заново</button><button class="btn ghost" data-act="logout" style="color:var(--stop)">Выйти</button></div>`;
 }
 
 /* ---------- отрисовка ---------- */
@@ -418,7 +426,7 @@ function sheet(title,body){
     scrimEl.addEventListener('click',e=>{if(e.target==scrimEl)close()});document.body.appendChild(scrimEl)}
   scrimEl.querySelector('.sh-hd h2').innerHTML=title;scrimEl.querySelector('#shb').innerHTML=body;scrimEl.querySelector('.sheet').scrollTop=0;
 }
-function close(){if(scrimEl){scrimEl.remove();scrimEl=null}}
+function close(){if(scrimEl&&scrimEl.dataset.reg)return;if(scrimEl){scrimEl.remove();scrimEl=null}}
 let toastT;
 function toast(t,s){document.querySelectorAll('.toast').forEach(x=>x.remove());const el=document.createElement('div');el.className='toast';el.innerHTML=t+(s?`<small>${s}</small>`:'');document.body.appendChild(el);clearTimeout(toastT);toastT=setTimeout(()=>el.remove(),5000);el.onclick=()=>el.remove()}
 
@@ -454,8 +462,10 @@ function addDraw(){
     const left=T.once-S.onceUsed;
     sheet('Какая карта нужна?',dots+`<div class="stack">
       <button class="opt ${add.kind=='sub'?'on':''}" data-kind="sub"><span class="e">🔁</span><span><b>Для подписки</b><span class="muted">Работает только в ${esc(add.name)}. Каждый месяц, пока не выключишь</span></span></button>
+      <button class="opt ${add.kind=='cat'?'on':''}" data-kind="cat"><span class="e">🏷</span><span><b>Для категории</b><span class="muted">Например, только на кино — одна карта для нескольких сервисов. В других магазинах не сработает</span></span></button>
       <button class="opt ${add.kind=='once'?'on':''}" data-kind="once" ${left<=0?'disabled':''}><span class="e">🎟</span><span><b>Одноразовая — для пробного периода</b><span class="muted">Сервис проверит карту и даст бесплатный период. Первая оплата — и карта закроется сама. ${left>0?'Осталось '+left+' в этом месяце':'В этом месяце закончились'}</span></span></button>
     </div>
+    ${add.kind=='cat'?`<p style="margin-top:14px">На что эта карта?</p><div class="chips">${Object.entries(CATS).map(([k,v])=>`<button class="${add.cat==k?'on':''}" data-cat="${k}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div>`:''}
     ${add.kind=='once'?`<p style="margin-top:14px">Когда кончается бесплатный период? Напомним за день</p><div class="chips">${[7,14,30].map(n=>`<button class="${add.trialDays==n?'on':''}" data-trial="${n}">${n} ${plural(n,'день','дня','дней')}</button>`).join('')}<button class="${add.trialDays==0?'on':''}" data-trial="0">Не знаю</button></div>`:''}
     <button class="btn" style="margin-top:14px" data-act="step3">Дальше</button>`);
   }else if(add.step==3){
@@ -481,13 +491,13 @@ function charge(s,amt){
   else if(s.state=='pause'){k='block';why='На паузе до '+fdate(s.pauseUntil)}
   else if(s.closed){k='block';why='Карта закрыта'}
   else{
-    const lim=Math.min(s.perTx||Infinity,s.perMonth||Infinity,s.total||Infinity);
+    const lim=Math.min(s.perTx||Infinity,s.perMonth||Infinity,s.total||Infinity,s.perDay||Infinity);
     if(amt>lim&&!s.allowOnce){S.ev.forEach(e=>{if(e.sub==s.id&&e.k=='limit')e.open=false});S.ev.push({t:Date.now(),sub:s.id,k:'limit',amt,lim,open:true});save();render();toast(`✋ ${s.name} хочет ${rub(amt)}`,'Это больше твоего предела '+rub(lim)+'. Не пустили — можешь пропустить один раз');return}
     if(S.wallet<amt){if(S.auto){const need=amt-S.wallet;S.wallet+=need;S.ev.push({t:Date.now()-1,k:'topup',amt:need,how:'Автопополнение с '+S.source.bank+' •• '+S.source.last4})}else{k='block';why='На Шлюзе не хватило денег'}}
   }
   if(k=='ok'){S.wallet-=amt;s.price=amt;if(!s.day)s.day=Math.min(28,today().getDate());if(s.allowOnce){delete s.allowOnce}
     if(s.kind=='once'){S.ev.push({t:Date.now(),sub:s.id,k:'ok',amt});s.state='off';s.closed=true;S.ev.push({t:Date.now()+1,sub:s.id,k:'close'});save();render();toast(`${s.name} списал ${rub(amt)}`,'Одноразовая карта закрылась. Нравится сервис — подключи постоянную');return}}
-  S.ev.push({t:Date.now(),sub:s.id,k,amt,why});save();render();
+  S.ev.push({t:Date.now(),sub:s.id,k,amt,why,st:k=='ok'?'pending':undefined});save();render();if(k=='ok')setTimeout(settle,20000);
   k=='ok'?toast(`${s.name} списал ${rub(amt)} ✓`,'Осталось на Шлюзе '+rub(S.wallet)):toast(`🛡 ${s.name} пытался списать ${rub(amt)}`,'Не пустили: '+why.charAt(0).toLowerCase()+why.slice(1));
 }
 
@@ -516,19 +526,30 @@ document.addEventListener('click',e=>{
   if(D.limsave){const s=sub(view.sub),v=D.zero?0:+document.getElementById('lim2').value;if(!D.zero&&!(v>0)){toast('Напиши сумму больше нуля');return}s[D.limsave]=v;save();close();render();toast(v?'Предел '+rub(v)+' ✓':'Без предела');return}
   if(D.dispute){const ev=S.ev.find(x=>x.t==+D.dispute);const s=sub(ev.sub)||{name:'Сервис'};
     sheet(`Что не так со списанием ${rub(ev.amt)}?`,`<div class="stack">${['Не знаю, что это за списание','Списали больше, чем должны','Подписку уже отменили, а деньги взяли'].map(r=>`<button class="opt" data-disp="${ev.t}" data-why="${r}"><span class="e">•</span><span><b>${r}</b></span></button>`).join('')}</div><p class="note">${esc(s.name)} · ${fdate(ev.t)}</p>`);return}
-  if(D.disp){const ev=S.ev.find(x=>x.t==+D.disp);ev.disputed=true;const s=sub(ev.sub);S.ev.push({t:Date.now(),sub:ev.sub,k:'dispute',amt:ev.amt,why:D.why});if(s&&s.state=='on'){s.state='pause';s.pauseUntil=addDays(today(),30).getTime()}save();
+  if(D.disp){const ev=S.ev.find(x=>x.t==+D.disp);ev.disputed=true;const s=sub(ev.sub);S.ev.push({t:Date.now(),sub:ev.sub,k:'dispute',amt:ev.amt,why:D.why,stage:0});if(s&&s.state=='on'){s.state='pause';s.pauseUntil=addDays(today(),30).getTime()}save();
     sheet('Заявка принята ✓',`<p>Сначала напишем в ${esc(s?s.name:'сервис')} — часто этого хватает. Не вернут — оспорим через банк. Обычно до 30 дней</p><p class="muted">Пока разбираемся, карта на паузе — новых списаний не будет. Деньги вернутся на Шлюз</p><button class="btn" data-act="close">Понятно</button>`);render();return}
   if(D.src){const[b,l]=D.src.split('|');S.source={bank:b,last4:l};save();close();render();toast('Пополняем с '+b+' •• '+l);return}
   if(D.plan){S.plan=D.plan;save();close();render();toast('Тариф «'+TARIFFS[D.plan].name+'» ✓');return}
   if(D.topchip){document.getElementById('tsum').value=D.topchip;return}
   if(D.how){const v=+document.getElementById('tsum').value;if(!(v>0)){toast('Напиши сумму');return}S.wallet+=v;S.ev.push({t:Date.now(),k:'topup',amt:v,how:D.how=='sbp'?'По СБП':'С '+S.source.bank+' •• '+S.source.last4});save();close();render();toast('Шлюз пополнен на '+rub(v)+' ✓','Теперь на нём '+rub(S.wallet));return}
+  if(D.ntf){S.ntf[D.ntf]=!S.ntf[D.ntf];save();render();return}
+  if(D.cat){add.cat=D.cat;return addDraw()}
+  if(D.dtrack)return dTrack(+D.dtrack);
+  if(D.dnext){const e=S.ev.find(x=>x.t==+D.dnext);if(e.stage<3){e.stage++;if(e.stage==2){S.wallet+=e.amt;S.ev.push({t:Date.now(),sub:e.sub,k:'credit',amt:e.amt})}}save();render();dTrack(e.t);return}
+  if(D.member){const s=sub(view.sub);s.members=s.members||[];const i=s.members.indexOf(D.member);i<0?s.members.push(D.member):s.members.splice(i,1);save();render();shareSheet();return}
+  if(D.reg){return regStep(D)}
   switch(D.act){
     case 'close':return close();
+    case 'note':{const s=sub(view.sub);sheet('Заметка к карте',`<p>Чтобы помнить, зачем эта подписка. Видишь только ты</p><div class="field"><label for="nt">Заметка</label><input id="nt" maxlength="40" value="${esc(s.note||'')}" placeholder="Например, мультики для Сони"></div><button class="btn" data-act="notesave">Сохранить</button>`);return}
+    case 'notesave':{sub(view.sub).note=document.getElementById('nt').value.trim();save();close();render();toast('Заметка сохранена ✓');return}
+    case 'share':return shareSheet();
+    case 'logout':sheet('Выйти из Шлюза?','<p>Карты продолжат работать как настроены. Вернёшься по номеру и коду из СМС</p><div class="stack"><button class="btn red" data-act="logoutok">Выйти</button><button class="btn ghost" data-act="close">Остаться</button></div>');return;
+    case 'logoutok':S.reg=false;save();close();reg(1);return;
     case 'add':add={step:1};return addDraw();
     case 'own':{const v=(document.getElementById('own').value||'').trim();if(v.length<2){toast('Выбери сервис или напиши название');return}add={step:2,svc:'',name:v,price:299,c:OTHER_C,kind:'sub'};return addDraw()}
     case 'step3':add.step=3;return addDraw();
     case 'issue':{const lim=+document.getElementById('lim').value;if(!(lim>0)){toast('Напиши сумму больше нуля');return}add.limit=lim;add.card=mkCard();add.step=4;return addDraw()}
-    case 'done':{const id='s'+Date.now();const o={id,svc:add.svc,name:add.name,price:add.limit,kind:add.kind,state:'on',perMonth:add.limit,perTx:add.limit,total:0,day:null};
+    case 'done':{const id='s'+Date.now();const o={id,svc:add.svc,name:add.name,price:add.limit,kind:add.kind,state:'on',perMonth:add.limit,perTx:add.limit,perDay:0,total:0,day:null,note:'',members:[]};if(add.kind=='cat')o.cat=add.cat||'kino';
       if(!add.svc)o.c=add.c;if(add.kind=='once'){S.onceUsed++;if(add.trialDays)o.trial=addDays(today(),add.trialDays).getTime()}
       S.subs.push(Object.assign(o,add.card));S.ev.push({t:Date.now(),sub:id,k:'issue'});save();close();openSub(id);toast(`${add.name} подключена ✓`,'Ждём первое списание — напишем, когда оно будет');return}
     case 'reveal':sheet('Покажем номер и код','<div class="faceid"><i>☺</i><span class="muted">Подтверди, что это ты</span></div><button class="btn" data-act="revealok">Подтвердить по лицу</button>');return;
@@ -543,10 +564,52 @@ document.addEventListener('click',e=>{
     case 'onb':return onb(0);
     case 'onbnext':return onb(+D.n);
     case 'onbdone':return close();
-    case 'reset':S=seed();S.onb=true;save();close();go('home');toast('Демо началось заново');return;
+    case 'reset':S=seed();S.onb=true;S.reg=true;save();close();go('home');toast('Демо началось заново');return;
   }
 });
 document.addEventListener('keydown',e=>{if(e.key=='Escape')close();if((e.key=='Enter'||e.key==' ')&&e.target.matches('.row[data-sub]')){e.preventDefault();openSub(e.target.dataset.sub)}});
+
+/* ярлык карты */
+function cardLbl(s){return s.kind=='once'?'на один раз':s.kind=='cat'?'только на '+CATS[s.cat]:'только для '+esc(s.name)}
+/* проведение списаний: «в обработке» → «проведено» */
+function settle(){let ch=0;S.ev.forEach(e=>{if(e.st=='pending'&&Date.now()-e.t>=20000){e.st='done';ch=1}});if(ch){save();if(!scrimEl)render()}}
+setInterval(settle,5000);
+
+/* спорное списание — этапы */
+const DSP=[
+  ['Заявка принята','Мы получили твою заявку'],
+  ['Написали в сервис','Часто сервис возвращает деньги сам — ждём до 5 дней'],
+  ['Оспариваем через банк','Сервис не вернул. Деньги временно вернули тебе, пока банк разбирается — до 90 дней'],
+  ['Решено в твою пользу','Деньги остаются у тебя'],
+];
+function dTrack(t){const e=S.ev.find(x=>x.t==t);const s=sub(e.sub)||{name:'Сервис'};const st=e.stage||0;
+  sheet('Спорное списание '+rub(e.amt),`<p class="muted">${esc(s.name)} · ${esc(e.why||'')}</p><div class="stack">${DSP.map((d,i)=>`<div class="trow" style="opacity:${i<=st?1:.45}"><span class="ic ${i<st?'ok':i==st?'pause':'info'}" style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;flex:none">${i<st?'✓':i+1}</span><div class="txt"><b style="font-size:15px">${d[0]}</b><span class="muted" style="font-size:13px">${d[1]}</span></div></div>`).join('')}</div>
+  ${st<3?`<div class="demo"><p>Для показа</p><button data-dnext="${e.t}">▶ Следующий этап</button></div>`:''}`)}
+
+/* кто пользуется картой */
+function shareSheet(){const s=sub(view.sub);
+  if(S.plan!='family')return sheet('Делиться картой',`<p>Карту ${esc(s.name)} можно дать близким: они увидят её у себя и вставят в свои устройства. А включать и выключать сможешь ты</p><p class="muted">Это есть на тарифе «Семья» — до 4 человек</p><button class="btn" data-act="tariffs">Посмотреть тариф «Семья»</button>`);
+  sheet('Кто пользуется '+esc(s.name),`<p class="muted">Отмеченные увидят карту у себя. Включать, выключать и менять пределы можешь только ты</p><div class="panel" style="margin-top:0;box-shadow:none;background:var(--surface2)"><div class="kv"><span style="color:var(--ink)">${esc(S.me.name)} — это ты</span><b>✓</b></div>${S.family.map(m=>`<div class="kv"><span style="color:var(--ink)">${esc(m)}</span><button class="sw ${(s.members||[]).includes(m)?'on':''}" role="switch" aria-checked="${(s.members||[]).includes(m)}" aria-label="${esc(m)}" data-member="${esc(m)}"></button></div>`).join('')}</div>`)}
+
+/* регистрация */
+let rg={};
+function reg(n){rg.n=n;const dots=`<div class="dots">${[1,2,3,4].map(i=>`<i class="${Math.min(n,4)==i?'on':''}"></i>`).join('')}</div>`;let t,b;
+  if(n==1){t='Вход в Шлюз';b=`<p>Все подписки под контролем: своя карта под каждый сервис и один переключатель</p><div class="field"><label for="ph">Номер телефона</label><input id="ph" type="tel" inputmode="tel" value="${rg.ph||'+7 '}" autocomplete="tel"></div><button class="btn" data-reg="2">Получить код по СМС</button><p class="note">Продолжая, соглашаешься с условиями Шлюза и банка-партнёра, который выпускает карты</p>`}
+  else if(n==2){t='Код из СМС';b=`<p>Отправили на ${esc(rg.ph)}</p><div class="field"><label for="cd">Код</label><input id="cd" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code"></div><button class="btn" data-reg="3">Дальше</button><p class="note">Подойдут любые 4 цифры</p>`}
+  else if(n==3){t='Подтверди, что это ты';b=`<p>Карты выпускает банк, а он по закону должен знать владельца. Это один раз и займёт минуту</p><div class="stack"><button class="btn" data-reg="4">Войти через Госуслуги</button></div><p class="note">Мы получим только имя, дату рождения и паспорт. Пароль от Госуслуг мы не видим</p>`}
+  else if(n==4){t='Проверено ✓';b=`<div class="panel" style="margin-top:0;box-shadow:none;background:var(--surface2)"><div class="kv"><span>Имя</span><b>${esc(S.me.full)}</b></div><div class="kv"><span>Дата рождения</span><b>12 марта 1993</b></div><div class="kv"><span>Паспорт</span><b>•• •• 482 117</b></div></div><button class="btn" style="margin-top:14px" data-reg="5">Всё верно</button>`}
+  else {t='Откуда пополнять Шлюз?';b=`<p>С этой карты будем класть деньги на Шлюз перед списаниями. Подойдёт карта любого банка</p><div class="stack">${[['Т-Банк','1234'],['Сбер','5521'],['Альфа-Банк','0087']].map(([bk,l])=>`<button class="btn ghost" data-reg="6" data-bank="${bk}|${l}">${bk} •• ${l}</button>`).join('')}<button class="btn ghost" data-reg="6" data-bank="sbp">Пополню сам по СБП</button></div>`}
+  sheet(t,dots+b);scrimEl.dataset.reg=1;scrimEl.querySelector('.x').hidden=true;
+  if(n==2)setTimeout(()=>{const c=document.getElementById('cd');c&&c.focus()},50);
+}
+function regStep(D){const n=+D.reg;
+  if(n==2){const v=document.getElementById('ph').value.replace(/\D/g,'');if(v.length!=11){toast('Проверь номер','Нужно 10 цифр после +7');return}rg.ph='+7 ('+v.slice(1,4)+') '+v.slice(4,7)+'-'+v.slice(7,9)+'-'+v.slice(9);}
+  if(n==3){const v=document.getElementById('cd').value.replace(/\D/g,'');if(v.length!=4){toast('Нужно 4 цифры из СМС');return}}
+  if(n==4){toast('Госуслуги: проверяем…');}
+  if(n==6){if(D.bank!='sbp'){const[b,l]=D.bank.split('|');S.source={bank:b,last4:l};S.auto=true}else S.auto=false;
+    S.me.phone=rg.ph||S.me.phone;S.reg=true;S.onb=true;save();delete scrimEl.dataset.reg;close();render();onb(0);return}
+  reg(n);
+}
 
 /* знакомство */
 const ONB=[
@@ -557,8 +620,8 @@ const ONB=[
 ];
 function onb(i){const[p,h,t]=ONB[i];sheet('Знакомство',`<div class="dots">${ONB.map((_,j)=>`<i class="${i==j?'on':''}"></i>`).join('')}</div><div class="onb-pic">${p}</div><h2 style="margin-bottom:8px">${h}</h2><p class="muted">${t}</p>${i<ONB.length-1?`<button class="btn" data-act="onbnext" data-n="${i+1}">Дальше</button>`:`<button class="btn" data-act="onbdone">Начать</button>`}`)}
 
-render();
-if(!S.onb){S.onb=true;save();onb(0)}
+settle();render();
+if(!S.reg)reg(1);else if(!S.onb){S.onb=true;save();onb(0)}
 </script>
 </body>
 </html>

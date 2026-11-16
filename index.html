@@ -209,7 +209,7 @@ const TARIFFS={
   base:{name:'Шлюз',price:149,year:1290,subs:15,once:10,list:['До 15 подписок','10 одноразовых карт в месяц','«Пропустить один раз» и пауза до даты','Автопополнение под списание','Пополнение картой без комиссии','Помощь со спорными списаниями']},
   family:{name:'Семья',price:249,subs:30,once:20,list:['Всё из тарифа «Шлюз»','До 30 подписок на 4 человек','Общие подписки, например семейный Яндекс Плюс','У ребёнка свой остаток']},
 };
-const KEY='shluz-demo-v3';
+const KEY='shluz-demo-v4';
 const CATS={kino:'кино и сериалы',music:'музыку и книги',games:'игры',food:'доставку еды'};
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
@@ -227,12 +227,12 @@ function seed(){
   const t=today(),day=n=>addDays(t,n).getDate();
   const mk=(id,svc,o)=>Object.assign({id,svc,name:SVC[svc].name,price:SVC[svc].price,kind:'sub',state:'on',perMonth:SVC[svc].price,perTx:SVC[svc].price,perDay:0,total:0,note:'',members:[]},mkCard(),o);
   const subs=[
-    mk('s1','yplus',{day:day(3)}),
-    mk('s2','ivi',{day:day(8),state:'off'}),
-    mk('s3','okko',{day:day(-1),note:'Мультики для Сони'}),
+    mk('s1','yplus',{day:day(3),locked:addDays(t,-60).getTime()}),
+    mk('s2','ivi',{day:day(8),state:'off',locked:addDays(t,-80).getTime()}),
+    mk('s3','okko',{day:day(-1),note:'Мультики для Сони',locked:addDays(t,-70).getTime()}),
     mk('s4','litres',{kind:'once',day:null,trial:addDays(t,5).getTime(),perMonth:399,perTx:399}),
-    mk('s5','vkm',{day:day(12),state:'pause',pauseUntil:addDays(t,15).getTime()}),
-    mk('s6','start',{day:day(22)}),
+    mk('s5','vkm',{day:day(12),locked:addDays(t,-50).getTime(),state:'pause',pauseUntil:addDays(t,15).getTime()}),
+    mk('s6','start',{day:day(22),locked:addDays(t,-40).getTime(),exp:String(t.getMonth()+2>12?1:t.getMonth()+2).padStart(2,'0')+'/'+String((t.getMonth()+1>11?t.getFullYear()+1:t.getFullYear())%100)}),
   ];
   const ts=(d,h,m)=>{const x=addDays(t,d);x.setHours(h,m);return x.getTime()};
   const ev=[
@@ -251,7 +251,7 @@ function seed(){
     {t:ts(-27,8,0),sub:'s1',k:'ok',amt:449},
     {t:ts(-30,11,40),sub:'s2',k:'ok',amt:399},
   ];
-  return{reg:false,me:{name:'Аня',full:'Анна Смирнова',phone:'+7 (911) 177-07-77'},ntf:{all:true,block:true,before:true},family:['Максим','Соня'],onb:false,seenEv:ts(-1,0,0),wallet:650,auto:true,source:{bank:'Т-Банк',last4:'1234'},plan:'base',onceUsed:1,subs,ev};
+  return{glDay:3000,glMonth:10000,reg:false,me:{name:'Аня',full:'Анна Смирнова',phone:'+7 (911) 177-07-77'},ntf:{all:true,block:true,before:true},family:['Максим','Соня'],onb:false,seenEv:ts(-1,0,0),wallet:650,auto:true,source:{bank:'Т-Банк',last4:'1234'},plan:'base',onceUsed:1,subs,ev};
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
@@ -290,6 +290,8 @@ function home(){
   </div>`;
   if(ask){const s=sub(ask.sub);if(s)h+=`<div class="banner warn"><div class="h"><span class="ic">✋</span><span><b>${esc(s.name)} хочет ${rub(ask.amt)}</b><span class="muted">Твой предел — ${rub(ask.lim)} в месяц. Мы не пустили</span></span></div><div class="btns"><button data-once="${s.id}">Пропустить один раз</button><button class="pri" data-keep="${s.id}">Не пускать</button></div></div>`}
   if(tb.length){const s=sub(tb[0].sub);h+=`<button class="banner" data-go="events"><span class="h"><span class="ic">🛡</span><span><b>${esc(s?s.name:'Сервис')} сегодня ${tb.length>1?'пытался '+tb.length+NB+'раза':'пытался'} списать ${rub(tb[0].amt)}</b><span class="muted">Не пустили ни разу. Посмотреть ›</span></span></span></button>`}
+  const ex=S.subs.find(x=>x.state!='off'&&expSoon(x));
+  if(ex)h+=`<div class="banner warn"><div class="h"><span class="ic">📅</span><span><b>Карта ${esc(ex.name)} заканчивается ${expTxt(ex)}</b><span class="muted">Выпустим новую — останется вставить её в ${esc(ex.name)}</span></span></div><div class="btns"><button class="pri" data-reissue="${ex.id}">Выпустить новую карту</button></div></div>`;
   if(trial)h+=`<button class="banner warn" data-sub="${trial.id}"><span class="h"><span class="ic">⏳</span><span><b>${esc(trial.name)}: пробный период до ${fdate(trial.trial)}</b><span class="muted">Карта одноразовая: заплатишь один раз — и она закроется. Нравится — сделай постоянную</span></span></span></button>`;
   h+=`<div class="sec"><h3>Мои подписки</h3><span class="muted">За 30 дней списали ${rub(spent30())}</span></div>`;
   if(!S.subs.length)h+=`<div class="list"><div class="empty">Подписок пока нет<br>Подключи первую — выпустим для неё карту</div></div>`;
@@ -319,6 +321,8 @@ function detail(s){
     <div class="kv"><span>Какая карта</span><b>${s.kind=='once'?'Одноразовая<br><span class="muted" style="font-weight:400;font-size:13px">закроется после первой оплаты</span>':s.kind=='cat'?'Только на '+CATS[s.cat]+'<br><span class="muted" style="font-weight:400;font-size:13px">в других магазинах не сработает</span>':'Только для '+esc(s.name)+'<br><span class="muted" style="font-weight:400;font-size:13px">в других местах не сработает</span>'}</b></div>
     <div class="kv"><span>Заметка</span><button class="lnk" data-act="note">${s.note?esc(s.note):'Добавить'} ›</button></div>
     <div class="kv"><span>Кто пользуется</span><button class="lnk" data-act="share">${s.members&&s.members.length?'Ты и '+s.members.join(', '):'Только ты'} ›</button></div>
+    ${s.kind=='sub'?`<div class="kv"><span>Привязка</span><b>${s.locked?'Привязалась к '+esc(s.name)+' '+fdate(s.locked):'Привяжется к сервису<br><span class="muted" style="font-weight:400;font-size:13px">при первой оплате</span>'}</b></div>`:''}
+    <div class="kv"><span>Срок карты</span>${expSoon(s)?`<button class="lnk" data-reissue="${s.id}">${expTxt(s)} · выпустить новую ›</button>`:`<b>до ${s.exp}</b>`}</div>
     <div class="kv"><span>Следующее списание</span><b>${s.state!='on'?'не пустим':trialOn(s)?'после '+fdate(s.trial):d?fdate(d)+' · '+rub(s.price):'ждём первое'}</b></div>
   </div>
   <div class="sec"><h3>Сколько можно списывать</h3></div>
@@ -329,10 +333,12 @@ function detail(s){
     <div class="kv"><span>Всего, за всё время</span><button class="lnk" data-lim="total">${s.total?'до '+rub(s.total):'без предела'} ›</button></div>
   </div>
   <div class="sec"><h3>Что было</h3></div>
-  <div class="list">${evs.length?evs.map(evRow).join(''):'<div class="empty">Списаний ещё не было</div>'}</div>
+  <div class="list">${evs.length?evs.map(e=>evRow(e)).join(''):'<div class="empty">Списаний ещё не было</div>'}</div>
   <div class="demo"><p>Кнопки для показа: что будет, если сервис попробует списать деньги</p>
     <button data-sim="${s.id}" data-amt="${s.price}">▶ ${esc(s.name)} списывает ${rub(s.price)}</button>
     <button data-sim="${s.id}" data-amt="${Math.round(s.price*1.5/10)*10-1}">▶ ${esc(s.name)} хочет ${rub(Math.round(s.price*1.5/10)*10-1)}</button>
+    <button data-sim="${s.id}" data-amt="${s.price}" data-fail="merchant">▶ Кто-то пробует заплатить этой картой в другом магазине</button>
+    <button data-sim="${s.id}" data-amt="${s.price}" data-fail="cvc">▶ Ввели неверный код CVC</button>
     <button data-refund="${s.id}">▶ ${esc(s.name)} вернул ${rub(s.price)}</button>
   </div>
   <button class="danger" data-act="remove">Удалить подписку и закрыть карту</button>`;
@@ -344,10 +350,12 @@ function evMeta(e){
   const s=sub(e.sub)||{name:e.name||'Сервис'};const n=esc(s.name);
   return {
     ok:[e.st=='pending'?'info':'ok',e.st=='pending'?'…':'✓',`${n} списал`,e.st=='pending'?'В обработке — деньги отложены, проведём за 1–3 дня':'Проведено',`<span class="amt">−${rub(e.amt)}</span>`],
+    lock:['info','🔗',`Карта привязалась к ${n}`,'Теперь она работает только там',''],
+    reissue:['info','▭',`Новая карта для ${n}`,'Старая закрыта. Вставь новую в '+n,''],
     check:['info','1',`${n} проверил карту`,'Взял 1'+NB+'₽ и сразу вернул — так сервисы проверяют карту',''],
     block:['block','✕',`${n} пытался списать — не пустили`,e.why||'Подписка выключена',`<span class="amt cut">${rub(e.amt)}</span>`],
     limit:['block','✋',`${n} хотел ${rub(e.amt)} — не пустили`,`Твой предел — ${rub(e.lim)}`+(e.open?'':e.allowed?' · пропущено один раз':''),`<span class="amt cut">${rub(e.amt)}</span>`],
-    refund:['ok','↩',`${n} вернул деньги`,'Лежат на Шлюзе — даже если карта уже закрыта',`<span class="amt plus">+${rub(e.amt)}</span>`],
+    refund:['ok','↩',`${n} вернул деньги`,s.closed||!sub(e.sub)?'Карта уже закрыта — всё равно вернули на Шлюз':'Лежат на Шлюзе',`<span class="amt plus">+${rub(e.amt)}</span>`],
     topup:['info','＋','Пополнили Шлюз',e.how||'',`<span class="amt plus">+${rub(e.amt)}</span>`],
     off:['info','⏻',`${n}: выключена`,'Ни одного списания, пока не включишь',''],
     on:['ok','⏻',`${n}: включена`,'Карта снова работает',''],
@@ -395,6 +403,8 @@ function profile(){
     <div>Подписок ${used} из ${T.subs}</div><div class="bar"><i style="width:${Math.min(100,used/T.subs*100)}%"></i></div>
     <div>Одноразовых карт в этом месяце ${S.onceUsed} из ${T.once}</div>
     <button data-act="tariffs">Все тарифы</button></div>
+  <div class="sec"><h3>Общий предел Шлюза</h3></div>
+  <div class="panel"><div class="kv"><span>За сутки</span><button class="lnk" data-gl="glDay">до ${rub(S.glDay)} ›</button></div><div class="kv"><span>За месяц</span><button class="lnk" data-gl="glMonth">до ${rub(S.glMonth)} ›</button></div><div class="kv"><span>Ещё можно потратить</span><b>сегодня ${rub(glLeft('d'))}<br>в этом месяце ${rub(glLeft('m'))}</b></div></div>
   <div class="sec"><h3>Уведомления</h3></div>
   <div class="panel">${[['all','О каждом списании','Сколько и кто списал'],['block','Когда не пустили','Сервис пытался списать, а мы отказали'],['before','За день до списания','Чтобы успеть выключить']].map(([k,a,b])=>`<div class="kv"><span style="color:var(--ink)"><b style="font-size:15px;text-align:left">${a}</b><span class="muted" style="font-size:13px;display:block">${b}</span></span><button class="sw ${S.ntf[k]?'on':''}" role="switch" aria-checked="${!!S.ntf[k]}" aria-label="${a}" data-ntf="${k}"></button></div>`).join('')}</div>
   ${S.plan=='family'?`<div class="sec"><h3>Семья</h3></div><div class="panel">${S.family.map(m=>`<div class="kv"><span style="color:var(--ink)">${esc(m)}</span><span class="muted">${S.subs.filter(x=>(x.members||[]).includes(m)).length} подписок</span></div>`).join('')}</div>`:''}
@@ -402,9 +412,10 @@ function profile(){
   <div class="panel steps">
     <div class="step"><b>1</b><div><strong>Пополняешь Шлюз</strong><p class="muted">Со своей карты любого банка или по СБП. Можно сразу, можно автоматически перед каждым списанием</p></div></div>
     <div class="step"><b>2</b><div><strong>Под каждый сервис — своя карта</strong><p class="muted">Её ты вставляешь в Иви, Okko и другие вместо своей. Работает только там</p></div></div>
+    <div class="step"><b>✓</b><div><strong>В выписке твоего банка — только «Шлюз»</strong><p class="muted">Какие сервисы ты оплачиваешь, видишь только ты</p></div></div>
     <div class="step"><b>3</b><div><strong>Сервис списывает — Шлюз решает</strong><p class="muted">Включено и не дороже твоего предела — пропускаем. Выключено, на паузе или дороже — не пускаем и пишем тебе</p></div></div>
   </div>
-  <div class="stack" style="margin-top:16px"><button class="btn ghost" data-act="onb">Показать знакомство ещё раз</button><button class="btn ghost" data-act="reset">Начать демо заново</button><button class="btn ghost" data-act="logout" style="color:var(--stop)">Выйти</button></div>`;
+  <div class="stack" style="margin-top:16px"><button class="btn ghost" data-act="onb">Показать знакомство ещё раз</button><button class="btn ghost" data-act="reset">Начать демо заново</button><button class="btn ghost" data-act="closeacc">Закрыть Шлюз</button><button class="btn ghost" data-act="logout" style="color:var(--stop)">Выйти</button></div>`;
 }
 
 /* ---------- отрисовка ---------- */
@@ -485,16 +496,20 @@ function addDraw(){
 }
 
 /* попытка списания (для показа) */
-function charge(s,amt){
+function charge(s,amt,fail){
   let k='ok',why='';
-  if(s.state=='off'){k='block';why=s.name+' выключена'}
+  if(fail=='merchant'&&s.kind!='once'){k='block';why=s.kind=='cat'?'Это магазин не на '+CATS[s.cat]:'Карта только для '+s.name+', а это был другой магазин'}
+  else if(fail=='cvc'){k='block';why='Неверный код или срок карты'}
+  else if(s.state=='off'){k='block';why=s.closed&&s.kind=='once'?'Одноразовая карта уже использована':s.name+' выключена'}
   else if(s.state=='pause'){k='block';why='На паузе до '+fdate(s.pauseUntil)}
   else if(s.closed){k='block';why='Карта закрыта'}
+  else if(glLeft('d')<amt||glLeft('m')<amt){k='block';why='Общий предел Шлюза: '+(glLeft('d')<amt?'за сутки осталось '+rub(glLeft('d')):'за месяц осталось '+rub(glLeft('m')))}
   else{
     const lim=Math.min(s.perTx||Infinity,s.perMonth||Infinity,s.total||Infinity,s.perDay||Infinity);
     if(amt>lim&&!s.allowOnce){S.ev.forEach(e=>{if(e.sub==s.id&&e.k=='limit')e.open=false});S.ev.push({t:Date.now(),sub:s.id,k:'limit',amt,lim,open:true});save();render();toast(`✋ ${s.name} хочет ${rub(amt)}`,'Это больше твоего предела '+rub(lim)+'. Не пустили — можешь пропустить один раз');return}
     if(S.wallet<amt){if(S.auto){const need=amt-S.wallet;S.wallet+=need;S.ev.push({t:Date.now()-1,k:'topup',amt:need,how:'Автопополнение с '+S.source.bank+' •• '+S.source.last4})}else{k='block';why='На Шлюзе не хватило денег'}}
   }
+  if(k=='ok'&&s.kind=='sub'&&!s.locked){s.locked=Date.now();S.ev.push({t:Date.now()+1,sub:s.id,k:'lock'})}
   if(k=='ok'){S.wallet-=amt;s.price=amt;if(!s.day)s.day=Math.min(28,today().getDate());if(s.allowOnce){delete s.allowOnce}
     if(s.kind=='once'){S.ev.push({t:Date.now(),sub:s.id,k:'ok',amt});s.state='off';s.closed=true;S.ev.push({t:Date.now()+1,sub:s.id,k:'close'});save();render();toast(`${s.name} списал ${rub(amt)}`,'Одноразовая карта закрылась. Нравится сервис — подключи постоянную');return}}
   S.ev.push({t:Date.now(),sub:s.id,k,amt,why,st:k=='ok'?'pending':undefined});save();render();if(k=='ok')setTimeout(settle,20000);
@@ -519,19 +534,24 @@ document.addEventListener('click',e=>{
   if(D.kind){add.kind=D.kind;if(D.kind=='once'&&add.trialDays==null)add.trialDays=7;return addDraw()}
   if(D.trial!=null){add.trialDays=+D.trial;return addDraw()}
   if(D.limchip){document.getElementById('lim').value=D.limchip;return}
-  if(D.sim)return charge(sub(D.sim),+D.amt);
+  if(D.sim)return charge(sub(D.sim),+D.amt,D.fail);
   if(D.refund){const s=sub(D.refund);S.wallet+=s.price;S.ev.push({t:Date.now(),sub:s.id,k:'refund',amt:s.price});save();render();toast(`${s.name} вернул ${rub(s.price)}`,'Деньги на Шлюзе');return}
   if(D.lim){const s=sub(view.sub),f=D.lim;const L={perTx:'За один раз',perMonth:'За месяц',total:'Всего, за всё время'}[f];
     sheet(L,`<p>${f=='total'?'Когда сервис наберёт эту сумму — карта перестанет пускать списания':'Попробует списать больше — не пустим и спросим тебя'}</p><div class="field"><label for="lim2">Не больше, ₽</label><input id="lim2" type="number" inputmode="numeric" value="${s[f]||''}" placeholder="Без предела"></div><div class="stack"><button class="btn" data-limsave="${f}">Сохранить</button>${s[f]?`<button class="btn ghost" data-limsave="${f}" data-zero="1">Без предела</button>`:''}</div>`);return}
   if(D.limsave){const s=sub(view.sub),v=D.zero?0:+document.getElementById('lim2').value;if(!D.zero&&!(v>0)){toast('Напиши сумму больше нуля');return}s[D.limsave]=v;save();close();render();toast(v?'Предел '+rub(v)+' ✓':'Без предела');return}
   if(D.dispute){const ev=S.ev.find(x=>x.t==+D.dispute);const s=sub(ev.sub)||{name:'Сервис'};
-    sheet(`Что не так со списанием ${rub(ev.amt)}?`,`<div class="stack">${['Не знаю, что это за списание','Списали больше, чем должны','Подписку уже отменили, а деньги взяли'].map(r=>`<button class="opt" data-disp="${ev.t}" data-why="${r}"><span class="e">•</span><span><b>${r}</b></span></button>`).join('')}</div><p class="note">${esc(s.name)} · ${fdate(ev.t)}</p>`);return}
+    if(ev.st=='pending')return sheet('Пока рано спорить',`<p>Списание ещё в обработке — сервис может сам его отменить. Спорить можно, когда его проведут, обычно через 1–3 дня</p><button class="btn" data-act="close">Понятно</button>`);
+    if(Date.now()-ev.t>90*864e5)return sheet('Поздно спорить',`<p>Спорить можно в течение 90 дней после списания. Это было ${fdate(ev.t)}. Напиши в ${esc(s.name)} — иногда сервисы возвращают и позже</p><button class="btn" data-act="close">Понятно</button>`);
+    sheet(`Что не так со списанием ${rub(ev.amt)}?`,`<div class="stack">${['Не знаю, что это за списание','Списали больше, чем должны','Подписку уже отменили, а деньги взяли'].map(r=>`<button class="opt" data-disp="${ev.t}" data-why="${r}"><span class="e">•</span><span><b>${r}</b></span></button>`).join('')}</div><div class="field" style="margin-top:14px"><label for="dtx">Расскажи, что случилось (можно не писать)</label><input id="dtx" placeholder="Например, подписку отменили 3 ноября"></div><div class="field"><label for="dfile">Скриншот или чек, если есть</label><input id="dfile" type="file" accept="image/*,.pdf"></div><p class="note">${esc(s.name)} · ${fdate(ev.t)}<br>Не оспаривай это списание через свой банк — Шлюз тогда заморозят. Мы оспорим сами</p>`);return}
   if(D.disp){const ev=S.ev.find(x=>x.t==+D.disp);ev.disputed=true;const s=sub(ev.sub);S.ev.push({t:Date.now(),sub:ev.sub,k:'dispute',amt:ev.amt,why:D.why,stage:0});if(s&&s.state=='on'){s.state='pause';s.pauseUntil=addDays(today(),30).getTime()}save();
     sheet('Заявка принята ✓',`<p>Сначала напишем в ${esc(s?s.name:'сервис')} — часто этого хватает. Не вернут — оспорим через банк. Обычно до 30 дней</p><p class="muted">Пока разбираемся, карта на паузе — новых списаний не будет. Деньги вернутся на Шлюз</p><button class="btn" data-act="close">Понятно</button>`);render();return}
   if(D.src){const[b,l]=D.src.split('|');S.source={bank:b,last4:l};save();close();render();toast('Пополняем с '+b+' •• '+l);return}
   if(D.plan){S.plan=D.plan;save();close();render();toast('Тариф «'+TARIFFS[D.plan].name+'» ✓');return}
   if(D.topchip){document.getElementById('tsum').value=D.topchip;return}
   if(D.how){const v=+document.getElementById('tsum').value;if(!(v>0)){toast('Напиши сумму');return}S.wallet+=v;S.ev.push({t:Date.now(),k:'topup',amt:v,how:D.how=='sbp'?'По СБП':'С '+S.source.bank+' •• '+S.source.last4});save();close();render();toast('Шлюз пополнен на '+rub(v)+' ✓','Теперь на нём '+rub(S.wallet));return}
+  if(D.reissue){const s=sub(D.reissue);Object.assign(s,mkCard());s.exp=String(today().getMonth()+1).padStart(2,'0')+'/'+String((today().getFullYear()+3)%100);delete s.locked;S.ev.push({t:Date.now(),sub:s.id,k:'reissue'});save();openSub(s.id);view.reveal=true;render();toast('Новая карта готова ✓','Вставь её в '+s.name+' — старая больше не работает');return}
+  if(D.gl){const f=D.gl;sheet(f=='glDay'?'Общий предел за сутки':'Общий предел за месяц',`<p>Сколько всего можно списать со всех карт Шлюза вместе. Даже если сервисов много — больше не уйдёт</p><div class="field"><label for="glv">Не больше, ₽</label><input id="glv" type="number" inputmode="numeric" value="${S[f]}"></div><button class="btn" data-glsave="${f}">Сохранить</button>`);return}
+  if(D.glsave){const v=+document.getElementById('glv').value;if(!(v>0)){toast('Напиши сумму больше нуля');return}S[D.glsave]=v;save();close();render();toast('Общий предел '+rub(v)+' ✓');return}
   if(D.ntf){S.ntf[D.ntf]=!S.ntf[D.ntf];save();render();return}
   if(D.cat){add.cat=D.cat;return addDraw()}
   if(D.dtrack)return dTrack(+D.dtrack);
@@ -543,6 +563,8 @@ document.addEventListener('click',e=>{
     case 'note':{const s=sub(view.sub);sheet('Заметка к карте',`<p>Чтобы помнить, зачем эта подписка. Видишь только ты</p><div class="field"><label for="nt">Заметка</label><input id="nt" maxlength="40" value="${esc(s.note||'')}" placeholder="Например, мультики для Сони"></div><button class="btn" data-act="notesave">Сохранить</button>`);return}
     case 'notesave':{sub(view.sub).note=document.getElementById('nt').value.trim();save();close();render();toast('Заметка сохранена ✓');return}
     case 'share':return shareSheet();
+    case 'closeacc':sheet('Закрыть Шлюз?',`<p>Все карты закроются сразу — ни один сервис больше не спишет. Остаток ${rub(S.wallet)} вернём на ${esc(S.source.bank)} •• ${S.source.last4} за 1–3 дня</p><p class="muted">Если сервис потом вернёт деньги — тоже перешлём. Данные по закону храним 5 лет, потом удаляем</p><div class="stack"><button class="btn red" data-act="closeaccok">Закрыть Шлюз</button><button class="btn ghost" data-act="close">Остаться</button></div>`);return;
+    case 'closeaccok':S=seed();save();close();go('home');reg(1);toast('Шлюз закрыт','Остаток вернём за 1–3 дня');return;
     case 'logout':sheet('Выйти из Шлюза?','<p>Карты продолжат работать как настроены. Вернёшься по номеру и коду из СМС</p><div class="stack"><button class="btn red" data-act="logoutok">Выйти</button><button class="btn ghost" data-act="close">Остаться</button></div>');return;
     case 'logoutok':S.reg=false;save();close();reg(1);return;
     case 'add':add={step:1};return addDraw();
@@ -569,6 +591,11 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key=='Escape')close();if((e.key=='Enter'||e.key==' ')&&e.target.matches('.row[data-sub]')){e.preventDefault();openSub(e.target.dataset.sub)}});
 
+/* срок карты и общий предел */
+function expDate(s){const[m,y]=s.exp.split('/').map(Number);return new Date(2000+y,m,0)}
+function expSoon(s){return (expDate(s)-today())/864e5<60}
+function expTxt(s){const d=expDate(s);return 'в '+['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'][d.getMonth()]}
+function glLeft(w){const from=w=='d'?Date.now()-864e5:new Date(today().getFullYear(),today().getMonth(),1).getTime();const sp=S.ev.filter(e=>e.k=='ok'&&e.t>=from).reduce((a,e)=>a+e.amt,0);return Math.max(0,(w=='d'?S.glDay:S.glMonth)-sp)}
 /* ярлык карты */
 function cardLbl(s){return s.kind=='once'?'на один раз':s.kind=='cat'?'только на '+CATS[s.cat]:'только для '+esc(s.name)}
 /* проведение списаний: «в обработке» → «проведено» */
@@ -603,7 +630,7 @@ function reg(n){rg.n=n;const dots=`<div class="dots">${[1,2,3,4].map(i=>`<i clas
   if(n==2)setTimeout(()=>{const c=document.getElementById('cd');c&&c.focus()},50);
 }
 function regStep(D){const n=+D.reg;
-  if(n==2){const v=document.getElementById('ph').value.replace(/\D/g,'');if(v.length!=11){toast('Проверь номер','Нужно 10 цифр после +7');return}rg.ph='+7 ('+v.slice(1,4)+') '+v.slice(4,7)+'-'+v.slice(7,9)+'-'+v.slice(9);}
+  if(n==2){let v=document.getElementById('ph').value.replace(/\D/g,'');if(v.length==10)v='7'+v;if(v.length==11&&v[0]=='8')v='7'+v.slice(1);if(v.length!=11||v[0]!='7'){toast('Проверь номер','Нужно 10 цифр после +7');return}rg.ph='+7 ('+v.slice(1,4)+') '+v.slice(4,7)+'-'+v.slice(7,9)+'-'+v.slice(9);}
   if(n==3){const v=document.getElementById('cd').value.replace(/\D/g,'');if(v.length!=4){toast('Нужно 4 цифры из СМС');return}}
   if(n==4){toast('Госуслуги: проверяем…');}
   if(n==6){if(D.bank!='sbp'){const[b,l]=D.bank.split('|');S.source={bank:b,last4:l};S.auto=true}else S.auto=false;

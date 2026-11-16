@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Шлюз — презентация</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Caveat:wght@700&display=swap">
+<style>
+/* Белый чистый фон, слайды 16:9 одной колонкой, каждый масштабируется под ширину экрана */
+:root{
+  --bg:#ffffff; --page:#f2f3f5; --ink:#0d0f12; --muted:#6b7280; --line:#e6e8ec;
+  --blue:#2445ff; --red:#ff3b30; --green:#16a34a; --soft:#f6f7f9;
+  --f-disp:"Unbounded",system-ui,sans-serif; --f-body:"Onest",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace; --f-hand:"Caveat","Comic Sans MS",cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--ink);font-family:var(--f-body);-webkit-text-size-adjust:100%}
+body{padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px))}
+.deck{max-width:1280px;margin:0 auto;display:grid;gap:20px}
+.wrap{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:18px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 12px 40px rgba(13,15,18,.08);background:var(--bg)}
+.slide{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;background:var(--bg);padding:84px 96px;display:grid;grid-template-columns:1fr 600px;gap:56px;align-items:center}
+.top{position:absolute;left:96px;right:96px;top:44px;display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:18px;color:var(--muted);letter-spacing:.06em}
+.top b{color:var(--ink);font-family:var(--f-disp);font-weight:800;letter-spacing:.04em;display:flex;gap:10px;align-items:center}
+.top b i{width:22px;height:22px;border-radius:7px;background:var(--ink);display:inline-grid;place-items:center}
+.top b i::after{content:"";width:8px;height:12px;border:2.5px solid #fff;border-radius:2px}
+.eyebrow{font-family:var(--f-mono);font-size:20px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:22px}
+.eyebrow.r{color:var(--red)} .eyebrow.b{color:var(--blue)} .eyebrow.g{color:var(--green)}
+h1{font-family:var(--f-disp);font-weight:800;font-size:62px;line-height:1.04;letter-spacing:-.02em;margin:0 0 18px;text-wrap:balance}
+.sub{font-family:var(--f-disp);font-weight:400;font-size:30px;line-height:1.25;margin:0 0 30px;color:var(--ink)}
+.sub em{font-style:normal;color:var(--blue)}
+ul{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+li{display:flex;gap:16px;align-items:baseline;font-size:29px;line-height:1.25}
+li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;background:var(--ink);transform:translateY(-4px)}
+.s1 h1{font-size:56px}
+.s1 li::before{background:var(--red)} .s2 li::before{background:var(--blue)} .s3 li::before{background:var(--green)}
+.foot{margin-top:34px;display:inline-flex;gap:14px;align-items:center;font-family:var(--f-mono);font-size:22px;padding:14px 22px;border-radius:99px;background:var(--ink);color:#fff}
+.foot span{opacity:.6}
+.art{position:relative;height:740px;display:grid;place-items:center}
+/* телефон */
+.phone{width:360px;height:720px;border-radius:52px;background:#0d0f12;padding:12px;box-shadow:0 30px 80px rgba(13,15,18,.22)}
+.scr{width:100%;height:100%;border-radius:42px;background:#fff;overflow:hidden;position:relative;padding:54px 20px 20px;font-family:var(--f-body)}
+.scr::before{content:"";position:absolute;top:14px;left:50%;transform:translateX(-50%);width:96px;height:26px;border-radius:20px;background:#0d0f12}
+.hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.hdr b{font-family:var(--f-disp);font-weight:800;font-size:18px}
+.hdr small{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.row{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.lg{width:38px;height:38px;border-radius:11px;color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center;flex:none}
+.tx{flex:1;min-width:0}
+.tx b{display:block;font-size:15px}
+.tx span{font-size:12px;color:var(--muted)}
+.sw{width:46px;height:28px;border-radius:99px;background:var(--green);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:2px;left:20px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.sw.off{background:#d9dce1}.sw.off::after{left:2px}
+.sw.mid{background:#9fd5b2}.sw.mid::after{left:11px}
+.amt{font-family:var(--f-mono);font-size:14px;font-weight:700;white-space:nowrap}
+.amt.neg{color:var(--ink)}
+/* выписка */
+.stm-h{font-family:var(--f-disp);font-weight:600;font-size:17px;margin-bottom:4px}
+.stm-d{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);margin:10px 0 2px;letter-spacing:.06em}
+.circle{position:absolute;pointer-events:none}
+.row.hit{position:relative}
+.ring{position:absolute;left:-12px;top:-4px;width:calc(100% + 24px);height:calc(100% + 8px);pointer-events:none}
+.note{position:absolute;font-family:var(--f-hand);font-size:54px;color:var(--red);transform:rotate(-8deg);white-space:nowrap}
+/* сумма */
+.big{background:var(--ink);color:#fff;border-radius:20px;padding:16px;margin-bottom:14px}
+.big small{font-size:12px;opacity:.7;display:block}
+.big b{font-family:var(--f-disp);font-weight:800;font-size:30px}
+.lim{font-family:var(--f-mono);font-size:11px;color:var(--blue);background:#eef1ff;padding:3px 7px;border-radius:99px;white-space:nowrap}
+.tag-no{position:absolute;right:-40px;top:500px;background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 16px 40px rgba(13,15,18,.16);display:flex;gap:12px;align-items:center;width:300px;transform:rotate(3deg)}
+.tag-no .ic{width:40px;height:40px;border-radius:50%;background:#ffe9e7;color:var(--red);display:grid;place-items:center;font-weight:800;font-size:20px;flex:none}
+.tag-no b{display:block;font-size:16px}
+.tag-no span{font-size:13px;color:var(--muted)}
+.tag-no s{color:var(--red);font-family:var(--f-mono);font-weight:700}
+.hand{position:absolute;width:250px;right:-30px;top:262px;filter:drop-shadow(0 18px 24px rgba(13,15,18,.18))}
+.ripple{position:absolute;width:64px;height:64px;border-radius:50%;border:3px solid var(--blue);opacity:.5}
+/* мобильная подпись */
+.hint{max-width:1280px;margin:0 auto 14px;font-family:var(--f-mono);font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="hint"><span>Шлюз · презентация · 3 слайда</span><span>Листай вниз ↓</span></div>
+<main class="deck">
+
+<!-- 1. Проблема -->
+<section class="wrap"><div class="slide s1" style="--h:56px">
+  <div class="top"><b><i></i>Шлюз</b><span>01 / 03 · ПРОБЛЕМА</span></div>
+  <div>
+    <div class="eyebrow r">● Проблема</div>
+    <h1>Подписки списывают деньги, о&nbsp;которых ты&nbsp;забыл</h1>
+    <ul>
+      <li>Каждая подписка живёт в&nbsp;своём приложении</li>
+      <li>После пробного периода сразу списывают деньги</li>
+      <li>Отменить трудно: кнопку прячут глубоко</li>
+      <li>О&nbsp;новой цене узнаёшь по&nbsp;выписке</li>
+    </ul>
+  </div>
+  <div class="art">
+    <div class="phone"><div class="scr">
+      <div class="stm-h">Выписка по&nbsp;карте</div>
+      <div class="hdr"><small>•• 4821 · ноябрь</small></div>
+      <div class="stm-d">17 НОЯБРЯ</div>
+      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#7b4dff">Ok</div><div class="tx"><b>OKKO</b><span>Подписка</span></div><div class="amt neg">−599&nbsp;₽</div></div>
+      <div class="row"><div class="lg" style="background:#16a34a">Пт</div><div class="tx"><b>Продукты</b><span>Магазин у&nbsp;дома</span></div><div class="amt neg">−1&nbsp;240&nbsp;₽</div></div>
+      <div class="stm-d">14 НОЯБРЯ</div>
+      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#ef2d7a">ив</div><div class="tx"><b>IVI.RU</b><span>Подписка</span></div><div class="amt neg">−399&nbsp;₽</div></div>
+      <div class="row"><div class="lg" style="background:#f59e0b">☕</div><div class="tx"><b>Кофейня</b><span>Капучино</span></div><div class="amt neg">−240&nbsp;₽</div></div>
+      <div class="stm-d">11 НОЯБРЯ</div>
+      <div class="row hit"><svg class="ring" viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M10 32 C 14 8, 270 2, 292 22 C 306 42, 240 58, 140 57 C 50 56, 4 50, 8 30 C 11 18, 50 8, 96 7" fill="none" stroke="#ff3b30" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><div class="lg" style="background:#ff8a1f">Лр</div><div class="tx"><b>LITRES</b><span>Пробный период закончился</span></div><div class="amt neg">−399&nbsp;₽</div></div>
+      <div class="row"><div class="lg" style="background:#2d8cff">ЯТ</div><div class="tx"><b>Такси</b><span>Поездка</span></div><div class="amt neg">−460&nbsp;₽</div></div>
+    </div></div>
+    <div class="note" style="right:-30px;top:70px">Это что?!</div>
+    <svg class="circle" style="right:22px;top:128px" width="90" height="60" viewBox="0 0 90 60"><path d="M80 6 C 60 20, 40 34, 10 44 M10 44 L 26 30 M10 44 L 30 50" fill="none" stroke="#ff3b30" stroke-width="5" stroke-linecap="round"/></svg>
+  </div>
+</div></section>
+
+<!-- 2. Решение -->
+<section class="wrap"><div class="slide s2">
+  <div class="top"><b><i></i>Шлюз</b><span>02 / 03 · РЕШЕНИЕ</span></div>
+  <div>
+    <div class="eyebrow b">● Решение</div>
+    <h1>Шлюз: все подписки на&nbsp;одном экране</h1>
+    <p class="sub">Выключил подписку <em>— и&nbsp;деньги не&nbsp;уйдут</em></p>
+    <ul>
+      <li>У&nbsp;каждого сервиса своя карта</li>
+      <li>Включить, выключить, пауза: одно касание</li>
+      <li>Хочет больше, чем ты разрешил? Спросим</li>
+      <li>Пополняй с&nbsp;карты любого банка</li>
+    </ul>
+  </div>
+  <div class="art">
+    <div class="phone"><div class="scr">
+      <div class="hdr"><b>Мои подписки</b><small>5</small></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#ff5a36,#c3171f)">Я+</div><div class="tx"><b>Яндекс Плюс</b><span>19 ноября · 449&nbsp;₽</span></div><div class="sw"></div></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#7b4dff,#3a17a8)">Ok</div><div class="tx"><b>Okko</b><span>Выключаю…</span></div><div class="sw mid" id="okko-sw"></div></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#ef2d7a,#9e0b4c);opacity:.5">ив</div><div class="tx" style="opacity:.55"><b>Иви</b><span>Выключена</span></div><div class="sw off"></div></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#2d8cff,#0a4fc2)">VK</div><div class="tx"><b>VK Музыка</b><span>28 ноября · 199&nbsp;₽</span></div><div class="sw"></div></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#3b3f47,#111317)">ST</div><div class="tx"><b>START</b><span>8 декабря · 299&nbsp;₽</span></div><div class="sw"></div></div>
+      <div style="margin-top:16px;padding:13px;border-radius:14px;background:#2445ff;color:#fff;text-align:center;font-weight:600;font-size:14px">＋ Подключить подписку</div>
+    </div></div>
+    <div class="ripple" style="left:384px;top:171px"></div>
+    <!-- рука: указательный палец нажимает на переключатель -->
+    <svg class="hand" viewBox="0 0 260 360" aria-hidden="true" style="right:-74px;top:178px;width:270px">
+      <g stroke="#0d0f12" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" fill="#fff">
+        <!-- палец -->
+        <path d="M44 34 C 44 14, 82 14, 82 34 L 84 170 L 46 176 Z"/>
+        <path d="M52 40 C 52 28, 74 28, 74 40 L 74 52 C 66 56, 58 56, 52 52 Z" fill="#f1f2f4"/>
+        <!-- ладонь и кулак -->
+        <path d="M46 160 C 40 196, 36 240, 52 286 C 66 326, 112 350, 166 346 C 218 342, 246 300, 244 250 L 240 166 C 240 146, 210 144, 208 166 L 208 176 C 208 154, 176 152, 174 172 L 174 182 C 174 160, 142 158, 140 178 L 140 190 C 140 170, 108 166, 104 186 L 102 200 L 84 170 L 84 150 C 70 140, 50 146, 46 160 Z"/>
+        <!-- согнутые пальцы -->
+        <path d="M140 190 C 140 212, 174 214, 174 194 M174 182 C 174 204, 208 206, 208 186 M208 176 C 208 196, 240 198, 240 180" fill="none"/>
+        <!-- большой палец -->
+        <path d="M104 186 C 98 220, 124 246, 156 244 C 176 242, 182 222, 166 214 C 150 206, 130 214, 120 200" fill="none"/>
+        <!-- рукав -->
+        <path d="M58 300 L 40 360 L 226 360 L 232 312" fill="#2445ff"/>
+      </g>
+    </svg>
+  </div>
+</div></section>
+
+<!-- 3. Выгоды -->
+<section class="wrap"><div class="slide s3">
+  <div class="top"><b><i></i>Шлюз</b><span>03 / 03 · ВЫГОДА</span></div>
+  <div>
+    <div class="eyebrow g">● Что получаешь</div>
+    <h1>Платишь только за&nbsp;то, что нужно</h1>
+    <ul>
+      <li>Не нужно, выключил: больше не&nbsp;платишь</li>
+      <li>Для пробного периода есть карта на&nbsp;один раз</li>
+      <li>Видно, сколько уходит за&nbsp;месяц</li>
+      <li>Украли номер карты? Больше лимита не&nbsp;спишут</li>
+    </ul>
+    <div class="foot">Шлюз · 149&nbsp;₽ в&nbsp;месяц <span>·</span> есть бесплатный тариф</div>
+  </div>
+  <div class="art">
+    <div class="phone"><div class="scr">
+      <div class="big"><small>Подписки за&nbsp;месяц</small><b>1&nbsp;346&nbsp;₽</b></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#ff5a36,#c3171f)">Я+</div><div class="tx"><b>Яндекс Плюс</b><span>449&nbsp;₽ в&nbsp;месяц</span></div><span class="lim">≤ 449&nbsp;₽</span></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#7b4dff,#3a17a8)">Ok</div><div class="tx"><b>Okko</b><span>399&nbsp;₽ в&nbsp;месяц</span></div><span class="lim">≤ 399&nbsp;₽</span></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#ff8a1f,#d0520a)">Лр</div><div class="tx"><b>Литрес</b><span>Карта на&nbsp;один раз</span></div><span class="lim" style="color:#b45309;background:#fef3c7">1 раз</span></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#2d8cff,#0a4fc2)">VK</div><div class="tx"><b>VK Музыка</b><span>199&nbsp;₽ в&nbsp;месяц</span></div><span class="lim">≤ 199&nbsp;₽</span></div>
+      <div class="row"><div class="lg" style="background:linear-gradient(135deg,#3b3f47,#111317)">ST</div><div class="tx"><b>START</b><span>299&nbsp;₽ в&nbsp;месяц</span></div><span class="lim">≤ 299&nbsp;₽</span></div>
+    </div></div>
+    <div class="tag-no"><span class="ic">✕</span><div><b>Okko хотел <s>599&nbsp;₽</s></b><span>Твой лимит 399&nbsp;₽ · не&nbsp;пустили</span></div></div>
+  </div>
+</div></section>
+
+</main>
+<script>
+function fit(){document.querySelectorAll('.wrap').forEach(w=>{w.firstElementChild.style.transform='scale('+(w.clientWidth/1600)+')'})}
+addEventListener('resize',fit);fit();if(document.fonts)document.fonts.ready.then(fit);
+document.addEventListener('keydown',e=>{const s=[...document.querySelectorAll('.wrap')];const y=scrollY+10;let i=s.findIndex(x=>x.offsetTop+x.offsetHeight>y);
+  if(e.key=='ArrowDown'||e.key=='ArrowRight'||e.key==' '){e.preventDefault();(s[i+1]||s[i]).scrollIntoView({behavior:'smooth',block:'center'})}
+  if(e.key=='ArrowUp'||e.key=='ArrowLeft'){e.preventDefault();(s[i-1]||s[0]).scrollIntoView({behavior:'smooth',block:'center'})}});
+</script>
+</body>
+</html>

@@ -78,15 +78,50 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
 .ripple{position:absolute;width:64px;height:64px;border-radius:50%;border:3px solid var(--blue);opacity:.5}
 /* мобильная подпись */
 .hint{max-width:1280px;margin:0 auto 14px;font-family:var(--f-mono);font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* слайд «Как это работает» */
+.slide.how{display:block;padding:120px 96px 70px}
+.how h1{font-size:60px;margin:0 0 6px}
+.how .lead{font-size:28px;color:var(--muted);margin:0 0 40px}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:26px}
+.stp{position:relative;background:var(--soft);border-radius:28px;padding:20px 18px 22px;display:grid;gap:14px;align-content:start}
+.stp:not(:last-child)::after{content:"→";position:absolute;right:-13px;top:120px;transform:translateX(50%);width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:18px;z-index:2}
+.stp .n{font-family:var(--f-mono);font-weight:700;font-size:18px;color:var(--muted)}
+.stp .t{font-family:var(--f-disp);font-weight:600;font-size:25px;line-height:1.12}
+.stp .s{font-size:19px;color:var(--muted);line-height:1.3}
+.stp .pic{height:200px;border-radius:20px;background:#fff;display:grid;place-items:center;position:relative;overflow:hidden;border:1px solid var(--line)}
+.vc{width:196px;height:122px;border-radius:16px;background:linear-gradient(135deg,#2445ff,#5a2bb8);color:#fff;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 12px 28px rgba(36,69,255,.3)}
+.vc b{font-family:var(--f-disp);font-size:14px;letter-spacing:.08em}.vc span{font-family:var(--f-mono);font-size:15px}
+.mph{width:84px;height:150px;border-radius:18px;border:5px solid var(--ink);display:grid;place-items:center;font-family:var(--f-disp);font-weight:800;font-size:14px;position:relative}
+.mph::before{content:"";position:absolute;top:7px;width:24px;height:6px;border-radius:4px;background:var(--ink)}
+.chip{position:absolute;right:16px;bottom:18px;background:var(--green);color:#fff;border-radius:99px;font-size:14px;font-weight:700;padding:5px 10px}
+.mn{width:88%;font-size:15px;display:grid;gap:8px}
+.mn .r{display:flex;justify-content:space-between;gap:8px}.mn .r b{font-family:var(--f-mono)}
+.mn .need{background:#ffecea;color:var(--red);border-radius:10px;padding:6px 10px;display:flex;justify-content:space-between;font-weight:600}
+.mn .bt{background:var(--blue);color:#fff;border-radius:10px;padding:9px;text-align:center;font-weight:600}
+.fan{display:flex;align-items:center;gap:14px}
+.fan .logos{display:grid;gap:8px}
+.lgs{width:44px;height:44px;border-radius:13px;color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center}
+.tgl{width:88%;display:grid;gap:12px}
+.tgl .r{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600}.tgl .r span:not(.lgs){flex:1}
+.tgl .lgs{width:34px;height:34px;font-size:12px;border-radius:10px}
+.rule{margin-top:34px;display:grid;grid-template-columns:auto auto repeat(3,1fr) auto auto;gap:14px;align-items:center}
+.rule .who{display:flex;gap:12px;align-items:center;background:var(--soft);border-radius:20px;padding:14px 18px;font-size:20px;font-weight:600}
+.rule .who small{display:block;font-family:var(--f-mono);font-size:16px;color:var(--muted);font-weight:500}
+.rule .ar{font-size:30px;color:var(--muted)}
+.rule .q{border:2px solid var(--line);border-radius:18px;padding:14px 16px;font-size:20px;font-weight:600;text-align:center}
+.rule .res{display:grid;gap:8px}
+.rule .res span{border-radius:14px;padding:9px 14px;font-weight:700;font-size:18px;white-space:nowrap}
+.rule .ok{background:#e8f7ee;color:var(--green)}.rule .no{background:#ffecea;color:var(--red)}
 </style>
 </head>
 <body>
-<div class="hint"><span>Шлюз · презентация · 3 слайда</span><span>Листай вниз ↓</span></div>
+<div class="hint"><span>Шлюз · презентация · 4 слайда</span><span>Листай вниз ↓</span></div>
 <main class="deck">
 
 <!-- 1. Проблема -->
 <section class="wrap"><div class="slide s1" style="--h:56px">
-  <div class="top"><b><i></i>Шлюз</b><span>01 / 03 · ПРОБЛЕМА</span></div>
+  <div class="top"><b><i></i>Шлюз</b><span>01 / 04 · ПРОБЛЕМА</span></div>
   <div>
     <div class="eyebrow r">● Проблема</div>
     <h1>Подписки списывают деньги, о&nbsp;которых ты&nbsp;забыл</h1>
@@ -119,13 +154,13 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
 
 <!-- 2. Решение -->
 <section class="wrap"><div class="slide s2">
-  <div class="top"><b><i></i>Шлюз</b><span>02 / 03 · РЕШЕНИЕ</span></div>
+  <div class="top"><b><i></i>Шлюз</b><span>02 / 04 · РЕШЕНИЕ</span></div>
   <div>
     <div class="eyebrow b">● Решение</div>
     <h1>Шлюз: все подписки на&nbsp;одном экране</h1>
     <p class="sub">Выключил подписку <em>— и&nbsp;деньги не&nbsp;уйдут</em></p>
     <ul>
-      <li>У&nbsp;каждого сервиса своя карта</li>
+      <li>Одна карта для&nbsp;всех подписок</li>
       <li>Включить, выключить, пауза: одно касание</li>
       <li>Сервис поднял цену? Не&nbsp;дадим списать лишнее</li>
       <li>Пополняй с&nbsp;карты любого банка</li>
@@ -171,9 +206,30 @@ li::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;backgro
   </div>
 </div></section>
 
+<!-- 3. Как это работает -->
+<section class="wrap"><div class="slide how">
+  <div class="top"><b><i></i>Шлюз</b><span>03 / 04 · КАК ЭТО РАБОТАЕТ</span></div>
+  <h1>Одна карта для&nbsp;всех подписок</h1>
+  <p class="lead">Вставил её&nbsp;везде&nbsp;→ управляешь переключателями</p>
+  <div class="flow">
+    <div class="stp"><div class="n">01</div><div class="pic"><div class="mph">Шлюз</div><span class="chip">СМС ✓</span></div><div class="t">Скачал и&nbsp;вошёл</div><div class="s">Телефон, код из&nbsp;СМС, Госуслуги</div></div>
+    <div class="stp"><div class="n">02</div><div class="pic"><div class="vc"><b>ШЛЮЗ</b><span>2200 •••• 4821</span></div></div><div class="t">Получил карту</div><div class="s">Одну. Сразу</div></div>
+    <div class="stp"><div class="n">03</div><div class="pic"><div class="mn"><div class="r"><span>В&nbsp;ноябре спишут</span><b>3&nbsp;000&nbsp;₽</b></div><div class="r"><span>На&nbsp;карте</span><b>500&nbsp;₽</b></div><div class="need"><span>Не&nbsp;хватает</span><span>2&nbsp;500&nbsp;₽</span></div><div class="bt">Пополнить</div></div></div><div class="t">Пополнил</div><div class="s">С&nbsp;любой карты или по&nbsp;СБП</div></div>
+    <div class="stp"><div class="n">04</div><div class="pic"><div class="fan"><div class="vc" style="width:104px;height:66px;padding:8px 10px;border-radius:11px"><b style="font-size:9px">ШЛЮЗ</b><span style="font-size:10px">•• 4821</span></div><div class="logos"><span class="lgs" style="background:#7b4dff">Ok</span><span class="lgs" style="background:#ef2d7a">ив</span><span class="lgs" style="background:#ff5a36">Я+</span></div></div></div><div class="t">Вставил в&nbsp;сервисы</div><div class="s">Один номер везде</div></div>
+    <div class="stp"><div class="n">05</div><div class="pic"><div class="tgl"><div class="r"><span class="lgs" style="background:#7b4dff">Ok</span><span>Okko</span><i class="sw off"></i></div><div class="r"><span class="lgs" style="background:#ef2d7a">ив</span><span>Иви</span><i class="sw"></i></div><div class="r"><span class="lgs" style="background:#ff5a36">Я+</span><span>Яндекс</span><i class="sw"></i></div></div></div><div class="t">Тык-тык</div><div class="s">Выключил&nbsp;— больше не&nbsp;спишут</div></div>
+  </div>
+  <div class="rule">
+    <div class="who"><span class="lgs" style="background:#7b4dff">Ok</span><div>Okko хочет<small>399&nbsp;₽</small></div></div>
+    <div class="ar">→</div>
+    <div class="q">Включён?</div><div class="q">Цена как обычно?</div><div class="q">Деньги есть?</div>
+    <div class="ar">→</div>
+    <div class="res"><span class="ok">✓ Всё да&nbsp;— списали</span><span class="no">✕ Нет&nbsp;— не&nbsp;пустили</span></div>
+  </div>
+</div></section>
+
 <!-- 3. Выгоды -->
 <section class="wrap"><div class="slide s3">
-  <div class="top"><b><i></i>Шлюз</b><span>03 / 03 · ВЫГОДА</span></div>
+  <div class="top"><b><i></i>Шлюз</b><span>04 / 04 · ВЫГОДА</span></div>
   <div>
     <div class="eyebrow g">● Что получаешь</div>
     <h1>Платишь только за&nbsp;то, что нужно</h1>
